@@ -54,4 +54,26 @@
 	}
 	window.CloudOS_Get_OAuth_URL = CloudOS_Get_OAuth_URL;
 
+	// ------------------------------------------------------------------------
+	function CloudOS_Get_OAuth_Access_Token (code) {
+		var url = 'https://' + CloudOS_Host +	'/oauth/access_token';
+		var data = {
+				"grant_type"   : "authorization_code",
+				"redirect_uri" : CloudOS_Callback_URL,
+				"client_id"    : CloudOS_App_Key,
+				"code"         : code
+		};
+
+		$.post(url,data,
+			function(json) {
+				console.dir(json);
+				SkySessionToken = json.OAUTH_ECI;
+				CloudOS_Session_Token = json.OAUTH_ECI;
+				kookie_create(SkySessionToken);
+				$('li.nav-anon').hide();
+				$('li.nav-auth').show();
+			}, "json")
+	}
+	window.CloudOS_Get_OAuth_Access_Token = CloudOS_Get_OAuth_Access_Token;
+
 })();
