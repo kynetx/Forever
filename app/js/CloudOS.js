@@ -4,10 +4,13 @@
 	// Personal Cloud Hostname
 	var CloudOS_Host = "kibdev.kobj.net";
 		window.CloudOS_Host = CloudOS_Host;
+
 	var CloudOS_App_Key = "67591932-AD30-11E2-AF99-7B86E71C24E1";
 		window.CloudOS_App_Key = CloudOS_App_Key;
+
 	var CloudOS_Callback_URL = "http://devcloud.krlcode.com/";
 		window.CloudOS_Callback_URL = CloudOS_Callback_URL;
+
 	var CloudOS_Session_Token = "none";
 		window.CloudOS_Session_Token = CloudOS_Session_Token;
 
@@ -41,6 +44,9 @@
 	}
 	window.CloudOS_Destroy_Channel = CloudOS_Destroy_Channel;
 
+	// ========================================================================
+	// OAuth functions
+
 	// ------------------------------------------------------------------------
 	function CloudOS_Get_OAuth_URL() {
 		var client_state = Math.floor(Math.random()*9999999);
@@ -67,13 +73,87 @@
 		$.post(url,data,
 			function(json) {
 				console.dir(json);
-				SkySessionToken = json.OAUTH_ECI;
-				CloudOS_Session_Token = json.OAUTH_ECI;
-				kookie_create(SkySessionToken);
-				$('li.nav-anon').hide();
+				CloudOS_Save_Session(json.OAUTH_ECI);
 				$('li.nav-auth').show();
+				$('li.nav-anon').hide();
 			}, "json")
 	}
 	window.CloudOS_Get_OAuth_Access_Token = CloudOS_Get_OAuth_Access_Token;
+
+	// ========================================================================
+	// Session Management
+
+	// ------------------------------------------------------------------------
+	function CloudOS_Retrieve_Session () {
+		var SessionCookie = kookie_retrieve();
+
+		if (SessionCookie != "undefined") {
+			CloudOS_Session_Token = SessionCookie;
+			console.debug('CloudOS_Session_Token: ', CloudOS_Session_Token);
+		} else {
+			CloudOS_Session_Token = "none";
+		}
+	}
+	window.CloudOS_Retrieve_Session = CloudOS_Retrieve_Session;
+
+	// ------------------------------------------------------------------------
+	function CloudOS_Save_Session (Session_ECI) {
+		CloudOS_Session_Token = Session_ECI;
+		kookie_create(Session_ECI);
+	}
+	window.CloudOS_Save_Session = CloudOS_Save_Session;
+
+	// ------------------------------------------------------------------------
+	function CloudOS_Remove_Session () {
+		CloudOS_Session_Token = "none";
+		kookie_delete();
+	}
+	window.CloudOS_Remove_Session = CloudOS_Remove_Session;
+
+	// ------------------------------------------------------------------------
+	function CloudOS_Authenticated_Session () {
+		return(CloudOS_Session_Token != "none")
+	}
+	window.CloudOS_Authenticated_Session = CloudOS_Authenticated_Session;
+
+	var SkyTokenName = '__SkySessionToken';
+	var SkyTokenExpire = 7;
+
+	// --------------------------------------------
+	function kookie_create(SkySessionToken) {
+    if (SkyTokenExpire) {
+      var date = new Date();
+      date.setTime(date.getTime()+(SkyTokenExpire*24*60*60*1000));
+      var expires = "; expires="+date.toGMTString();
+    }
+    else var expires = "";
+    var kookie = SkyTokenName+"="+SkySessionToken+expires+"; path=/";
+    document.cookie = kookie;
+    // console.debug('(create): ', kookie);
+	}
+
+	// --------------------------------------------
+	function kookie_delete() {
+    var kookie = SkyTokenName+"=foo; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/";
+    document.cookie = kookie;
+    // console.debug('(destroy): ', kookie);
+	}
+
+	// --------------------------------------------
+	function kookie_retrieve() {
+    var TokenValue = 'undefined';
+		var TokenName  = '__SkySessionToken';
+    var allKookies = document.cookie.split('; ');
+    for (var i=0;i<allKookies.length;i++) {
+      var kookiePair = allKookies[i].split('=');
+			// console.debug("Kookie Name: ", kookiePair[0]);
+			// console.debug("Token  Name: ", TokenName);
+      if (kookiePair[0] == TokenName) {
+        TokenValue = kookiePair[1];
+      };
+    }
+    // console.debug("(retrieve) TokenValue: ", TokenValue);
+		return TokenValue;
+	}
 
 })();
