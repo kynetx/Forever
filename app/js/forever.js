@@ -40,13 +40,6 @@ $(document).ready(function() {
 		} else if (oauthCode) {
 				// getOAuthAccessToken(oauthCode);
 			CloudOS_Get_OAuth_Access_Token(oauthCode);
-//			if (CloudOS_Authenticated_Session()) {
-//				Navbar_Show_Auth()
-//				console.debug("Navbar_Show_Auth");
-//			} else {
-//				Navbar_Show_Anon()
-//				console.debug("Navbar_Show_Anon");
-//			}
 		} else {
 			console.debug('Unrecognized query string: ', query);
 		}
@@ -138,6 +131,7 @@ $(document).ready(function() {
 	// View: profile
 	function view_profile() {
 		show_view('profile');
+		getMyProfile();
 		set_screen_title('Profile');
 		currentView = 'profile';
 	};
@@ -200,5 +194,56 @@ $(document).ready(function() {
 		currentView = '404';
 	};
 
+	// --------------------------------------------
+	function getMyProfile() {
+		$('#modalSpinner').show();
+		CloudOS_Get_MyProfile(function(json) {
+			console.dir(json);
+			$('#modalSpinner').hide();
+			$('#myProfileName').val(json.myProfileName);
+			$('#myProfileEmail').val(json.myProfileEmail);
+			$('#myProfilePhone').val(json.myProfilePhone);
+			$('#myProfileDescription').text(json.myProfileDescription);
+			$('#myProfileNotes').text(json.myProfileNotes);
+			$('#myProfilePhoto').val(json.myProfilePhoto);
+			$('#myProfilePhoto-preview').attr('src', json.myProfilePhoto);
+		});
+	}
+
+	// --------------------------------------------
+	function updatePhotoPreview(input) {
+		//console.debug("file: ", input.files[0]);
+		//console.debug("elID: ", $K(input).attr("elid"));
+		//console.debug("input: ", input);
+
+		if (input.files && input.files[0]) {
+			var reader = new FileReader();
+			var eleID  = $(input).attr("elid");
+
+			reader.onload = function (e) {
+				$('#' + eleID + '-preview')
+					.attr('src', e.target.result);
+				$('#' + eleID)
+					.val(e.target.result);
+			};
+			reader.readAsDataURL(input.files[0]);
+		}
+	}
+	window.updatePhotoPreview = updatePhotoPreview;
+
+	// --------------------------------------------
+	// POST profile
+
+	$('form.form-profile').submit(function(event) {
+		var eventAttributes = $(this).serialize();
+
+		event.preventDefault();
+		$('#modalSpinner').show();
+		CloudOS_Update_MyProfile(eventAttributes,
+			function(json) {
+				$('#modalSpinner').hide();
+				$('#alert-profile-success').show('fast').delay(7000).hide('fast');
+		});
+  });
 
 });

@@ -16,11 +16,12 @@
 
 	// ------------------------------------------------------------------------
 	// Raise Sky Event
-	function CloudOS_Raise_Event(eventDomain, eventType, eventAttributes, postFunction) {
+	function CloudOS_Raise_Event(eventDomain, eventType, eventAttributes, eventParameters, postFunction) {
 		var eid = Math.floor(Math.random()*9999999);
 		var esl = 'https://' + window.CloudOS_Host + '/sky/event/' +
-			window.CloudOS_Session_Token + '/' +  eid + '/' +
-			eventDomain + '/' + eventType;
+			CloudOS_Session_Token + '/' +  eid + '/' +
+			eventDomain + '/' + eventType +
+			'?' + eventParameters;
 
 		console.debug('CloudOS_Session_Token: ', window.CloudOS_Session_Token);
 		$.post(esl, eventAttributes, function(json) {postFunction(json)}, "json")
@@ -28,8 +29,30 @@
 	window.CloudOS_Raise_Event = CloudOS_Raise_Event;
 
 	// ------------------------------------------------------------------------
+	// Call Sky Cloud
+
+	function CloudOS_Sky_Cloud (Module, FuncName, getSuccess) {
+		var esl = 'https://' + window.CloudOS_Host + '/sky/cloud/' +
+					Module + '/' + FuncName;
+
+		$.ajax({
+				type: 'GET',
+				url: esl,
+				async: false,
+				dataType: 'json',
+				headers: {'Kobj-Session' : CloudOS_Session_Token},
+				success: function(json) { getSuccess(json) },
+				error: function(e) {
+						$('#modalSpinner').hide();
+						console.log(e.message);
+				}
+		})
+	}
+	window.CloudOS_Sky_Cloud = CloudOS_Sky_Cloud;
+
+	// ------------------------------------------------------------------------
 	function CloudOS_Create_Channel(postFunction) {
-		CloudOS_Raise_Event('cloudos', 'api_Create_Channel', { },
+		CloudOS_Raise_Event('cloudos', 'api_Create_Channel', { }, "",
 			function(json) { postFunction(json) }
 		);
 	}
@@ -38,11 +61,28 @@
 	// ------------------------------------------------------------------------
 	function CloudOS_Destroy_Channel(myToken, postFunction) {
 		CloudOS_Raise_Event('cloudos', 'api_Destroy_Channel',
-			{ "token" : myToken },
+			{ "token" : myToken }, "",
 			function(json) { postFunction(json) }
 		);
 	}
 	window.CloudOS_Destroy_Channel = CloudOS_Destroy_Channel;
+
+	// ========================================================================
+	// Profile Management
+
+	function CloudOS_Get_MyProfile (getSuccess) {
+		CloudOS_Sky_Cloud("pds", "get_all_me",
+			function(json) { getSuccess(json) })
+	}
+	window.CloudOS_Get_MyProfile = CloudOS_Get_MyProfile;
+
+	function CloudOS_Update_MyProfile (eventAttributes, postFunction) {
+		var eventParameters = "_rids=a169x727&element=profileUpdate.post";
+		CloudOS_Raise_Event('web', 'submit', eventAttributes, eventParameters,
+			function(json) { postFunction(json) }
+		);
+	}
+	window.CloudOS_Update_MyProfile = CloudOS_Update_MyProfile;
 
 	// ========================================================================
 	// OAuth functions
