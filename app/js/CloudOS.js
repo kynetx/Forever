@@ -31,9 +31,9 @@
 	// ------------------------------------------------------------------------
 	// Call Sky Cloud
 
-	function CloudOS_Sky_Cloud (Module, FuncName, getSuccess) {
+	function CloudOS_Sky_Cloud (Module, FuncName, callParmaters, getSuccess) {
 		var esl = 'https://' + window.CloudOS_Host + '/sky/cloud/' +
-					Module + '/' + FuncName;
+					Module + '/' + FuncName + '?' + callParmaters;
 
 		$.ajax({
 				type: 'GET',
@@ -42,10 +42,10 @@
 				dataType: 'json',
 				headers: {'Kobj-Session' : CloudOS_Session_Token},
 				success: function(json) { getSuccess(json) },
-				error: function(e) {
-						$('#modalSpinner').hide();
-						console.log(e.message);
-				}
+//				error: function(e) {
+//						$('#modalSpinner').hide();
+//						console.log(e.message);
+//				}
 		})
 	}
 	window.CloudOS_Sky_Cloud = CloudOS_Sky_Cloud;
@@ -71,7 +71,7 @@
 	// Profile Management
 
 	function CloudOS_Get_MyProfile (getSuccess) {
-		CloudOS_Sky_Cloud("pds", "get_all_me",
+		CloudOS_Sky_Cloud("pds", "get_all_me", "",
 			function(json) { getSuccess(json) })
 	}
 	window.CloudOS_Get_MyProfile = CloudOS_Get_MyProfile;
@@ -83,6 +83,70 @@
 		);
 	}
 	window.CloudOS_Update_MyProfile = CloudOS_Update_MyProfile;
+
+	function CloudOS_Get_Friend_Profile (friendToken, getSuccess) {
+		var callParmaters = "myToken=" + friendToken;
+		CloudOS_Sky_Cloud("a169x727", "getFriendProfile", callParmaters,
+			function(json) { getSuccess(json) })
+	}
+	window.CloudOS_Get_Friend_Profile = CloudOS_Get_Friend_Profile;
+
+	// ========================================================================
+	// PDS Management
+
+	// ------------------------------------------------------------------------
+	function CloudOS_PDS_Add (namespace, pdsKey, pdsValue, postFunction) {
+		var eventAttributes = {
+			"namespace" : namespace,
+			"pdsKey"    : pdsKey,
+			"pdsValue"  : JSON.stringify(pdsValue)
+		};
+
+		CloudOS_Raise_Event('cloudos', 'api_pds_add', eventAttributes, "",
+			function(json) { postFunction(json) }
+		)
+	}
+	window.CloudOS_PDS_Add = CloudOS_PDS_Add;
+
+	// ------------------------------------------------------------------------
+	function CloudOS_PDS_Delete (namespace, pdsKey, postFunction) {
+		var eventAttributes = {
+			"namespace" : namespace,
+			"pdsKey"    : pdsKey
+		};
+
+		CloudOS_Raise_Event('cloudos', 'api_pds_delete', eventAttributes, "",
+			function(json) { postFunction(json) }
+		)
+	}
+	window.CloudOS_PDS_Delete = CloudOS_PDS_Delete;
+
+	// ------------------------------------------------------------------------
+	function CloudOS_PDS_Update () {
+	}
+	window.CloudOS_PDS_Update = CloudOS_PDS_Update;
+
+	// ------------------------------------------------------------------------
+	function CloudOS_PDS_List (namespace, getSuccess) {
+		var callParmeters = "namespace=" + namespace;
+		CloudOS_Sky_Cloud("pds", "get_items", callParmeters,
+			function(json) { getSuccess(json) })
+	}
+	window.CloudOS_PDS_List = CloudOS_PDS_List;
+
+	// ------------------------------------------------------------------------
+	function CloudOS_Send_Email (ename, email, subject, body, postFunction) {
+		var eventAttributes = {
+			"ename"   : ename,
+			"email"   : email,
+			"subject" : subject,
+			"body"    : body
+		};
+		CloudOS_Raise_Event('cloudos', 'api_send_email', eventAttributes, "",
+			function(json) { postFunction(json) }
+		)
+	}
+	window.CloudOS_Send_Email = CloudOS_Send_Email;
 
 	// ========================================================================
 	// OAuth functions

@@ -113,9 +113,10 @@ $(document).ready(function() {
 	// --------------------------------------------
 	// View: friend finder
 	function view_finder() {
+		$('#modalSpinner').show();
+		getForeverInvitations();
 		show_view('finder');
 		set_screen_title('Finder');
-		$('#modalSpinner').show();
 		currentView = 'finder';
 	};
 
@@ -124,6 +125,12 @@ $(document).ready(function() {
 	function view_invite(ctx) {
 		var token = ctx.params.token;
 		console.debug('Invite Token: ', token);
+		CloudOS_Get_Friend_Profile(token,
+			function(json) {
+				console.dir(json);
+			}
+		);
+		show_view('invite');
 		currentView = 'invite';
 	};
 
@@ -194,6 +201,9 @@ $(document).ready(function() {
 		currentView = '404';
 	};
 
+	// ========================================================================
+	// myProfile Management
+
 	// --------------------------------------------
 	function getMyProfile() {
 		$('#modalSpinner').show();
@@ -232,7 +242,7 @@ $(document).ready(function() {
 	window.updatePhotoPreview = updatePhotoPreview;
 
 	// --------------------------------------------
-	// POST profile
+	// Update myProfile
 
 	$('form.form-profile').submit(function(event) {
 		var eventAttributes = $(this).serialize();
@@ -242,8 +252,109 @@ $(document).ready(function() {
 		CloudOS_Update_MyProfile(eventAttributes,
 			function(json) {
 				$('#modalSpinner').hide();
-				$('#alert-profile-success').show('fast').delay(7000).hide('fast');
-		});
-  });
+				$('#alert-profile-success').show('fast').delay(7000).hide('fast')
+		})
+  })
+
+	// ========================================================================
+	// Friend Finder
+
+	// --------------------------------------------
+	// GET list of Forever Invitations
+
+	function getForeverInvitations() {
+		CloudOS_PDS_List("foreverInvite",
+		  function(json) {
+				// console.dir(json);
+				$('#table-finder').html('');
+				if (json) {
+					jQuery.each(json, function(token, val) {
+						var newRow = '<tr><td>' +
+									val.name +
+									'<button class="btn btn-mini btn-danger btn-finder-action btn-finder-action-revoke pull-right" data-token="'+
+									val.token + '">Revoke</button>' +
+									'<button class="btn btn-mini btn-primary btn-finder-action pull-right">Resend</button>' +
+									'</td></tr>';
+						$('#table-finder').prepend(newRow);
+					})
+				}
+				$('#modalSpinner').hide();
+			}
+		);
+	}
+
+	$('form.form-finder').submit(function(event) {
+
+		event.preventDefault();
+		$('#modalSpinner').show();
+
+		CloudOS_Create_Channel(
+			function(json) {
+				var ename = $('#inviteName').val();
+				var email = $('#inviteEmail').val();
+				var eventAttributes = {
+						"token" : json.token,
+						"name"  : ename,
+						"email" : email
+				};
+				console.dir(eventAttributes);
+				console.dir(json);
+
+				CloudOS_PDS_Add("foreverInvite", json.token, eventAttributes,
+				  function(json) {
+						console.dir(json);
+						// Clear invitation form
+						$('#inviteName').val('');
+						$('#inviteEmail').val('');
+
+						// Add new invitation to table
+						var newRow = '<tr><td>' +
+											 json.name +
+											 '<button class="btn btn-mini btn-danger btn-finder-action pull-right" data-token="'+
+												 json.token + '">Revoke</button>' +
+											 '<button class="btn btn-mini btn-primary btn-finder-action pull-right">Resend</button>' +
+											 '</td></tr>';
+						$('#table-finder').prepend(newRow);
+						$('#modalSpinner').hide();
+				})
+
+				// --------------------------------------------
+				// send invitation email
+				var subject = "Kynetx Forever Invitation";
+				var body = "You have been invited to Forever " +
+							"http://devcloud.krlcode.com/?invite=" + json.token;
+				CloudOS_Send_Email(ename, email, subject, body,
+				  function(json) {
+						console.dir(json);
+					})
+			}
+		);
+	})
+
+	// --------------------------------------------
+	// Finder Revoke Invitation
+	$('#table-finder').on('click','button.btn-finder-action-revoke',
+		function(event){
+			var token = $(this).attr('data-token');
+			console.debug("revoke token: ", token);
+
+			// Remove row from GUI
+			$(this).parent().parent().remove();
+
+			CloudOS_PDS_Delete("foreverInvite", token,
+				  function(json) {
+						console.dir(json);
+					}
+			);
+
+			CloudOS_Destroy_Channel(token,
+				  function(json) {
+						console.dir(json);
+					}
+			);
+
+			return false;
+		}
+	)
 
 });
