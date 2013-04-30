@@ -166,6 +166,13 @@
 	}
 	window.CloudOS_Subscribe = CloudOS_Subscribe;
 
+	// ------------------------------------------------------------------------
+	function CloudOS_Subscription_List (callParmaters, getSuccess) {
+		CloudOS_Sky_Cloud("cloudos", "subscriptionList", callParmaters,
+			function(json) { getSuccess(json) })
+	}
+	window.CloudOS_Subscription_List = CloudOS_Subscription_List;
+
 	// ========================================================================
 	// OAuth functions
 
