@@ -65,6 +65,7 @@ $(document).ready(function() {
 	function Navbar_Show_Auth() {
 		$('li.nav-auth').show();
 		$('li.nav-anon').hide();
+		getMyProfile()
 	}
 
 	// --------------------------------------------
@@ -125,12 +126,8 @@ $(document).ready(function() {
 	function view_invite(ctx) {
 		var token = ctx.params.token;
 		console.debug('Invite Token: ', token);
-		CloudOS_Get_Friend_Profile(token,
-			function(json) {
-				console.dir(json);
-			}
-		);
-		show_view('invite');
+		getFriendProfile(token);
+		//show_view('invite');
 		currentView = 'invite';
 	};
 
@@ -219,6 +216,7 @@ $(document).ready(function() {
 			$('#myProfilePhoto-preview').attr('src', json.myProfilePhoto);
 		});
 	}
+	window.getMyProfile = getMyProfile;
 
 	// --------------------------------------------
 	function updatePhotoPreview(input) {
@@ -353,6 +351,55 @@ $(document).ready(function() {
 					}
 			);
 
+			return false;
+		}
+	)
+
+	// ========================================================================
+	// Invitation Management
+
+	function getFriendProfile(token) {
+		CloudOS_Get_Friend_Profile(token,
+			function(json) {
+				console.dir(json);
+				if (json.status) {
+					var iname = json.myProfileName;
+
+					$('#btn-invitation-accept').attr('data-token', token);
+					$('#btn-invitation-accept').attr('data-name', iname);
+					$('#hostess-photo').attr('src', json.myProfilePhoto);
+					$('#hostess-name').text(json.myProfileName);
+					$('#hostess-email').text(json.myProfileEmail);
+					$('#hostess-phone').text(json.myProfilePhone);
+					show_view('invite');
+					set_screen_title('Invitation');
+				} else {
+					show_view('invite-expired');
+					set_screen_title('Invitation');
+				}
+				$('#modalSpinner').hide();
+			}
+		);
+	}
+
+	// --------------------------------------------
+	// Accept Forever Invitation
+	$('#btn-invitation-accept').on('click',
+		function(event){
+			var token  = $(this).attr('data-token');
+			var iname  = $(this).attr('data-name');
+			var myname = $('#myProfileName').val();
+			var attrs  = {
+					"name"   : myname+":"+iname,
+					"pdsKey" : token
+			};
+
+			CloudOS_Subscribe("Forever", "Forever Friend", "friend-friend",
+												token, attrs,
+			  function(json) {
+				  console.dir(json);
+			  }
+			);
 			return false;
 		}
 	)

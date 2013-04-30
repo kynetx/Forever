@@ -149,6 +149,24 @@
 	window.CloudOS_Send_Email = CloudOS_Send_Email;
 
 	// ========================================================================
+	// Subscription Management
+
+	// ------------------------------------------------------------------------
+	function CloudOS_Subscribe (namespace, name, relationship, token, subAttributes, postFunction) {
+		var eventAttributes = {
+			"namespace"     : namespace,
+			"channelName"   : name,
+			"relationship"  : relationship,
+			"targetChannel" : token,
+			"subAttrs"      : subAttributes
+		};
+		CloudOS_Raise_Event('cloudos', 'api_subscribe', eventAttributes, "",
+			function(json) { postFunction(json) }
+		)
+	}
+	window.CloudOS_Subscribe = CloudOS_Subscribe;
+
+	// ========================================================================
 	// OAuth functions
 
 	// ------------------------------------------------------------------------
@@ -180,6 +198,7 @@
 				CloudOS_Save_Session(json.OAUTH_ECI);
 				$('li.nav-auth').show();
 				$('li.nav-anon').hide();
+				getMyProfile()
 			}, "json")
 	}
 	window.CloudOS_Get_OAuth_Access_Token = CloudOS_Get_OAuth_Access_Token;
