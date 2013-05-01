@@ -36,7 +36,15 @@ $(document).ready(function() {
 	if (query != "") {
 		var inviteToken = getQueryVariable('invite');
 		var oauthCode = getQueryVariable('code');
-		if (inviteToken){
+		if (query === "friends")
+			page("/friends")
+		else if (query === "finder")
+			page("/finder")
+		else if (query === "profile")
+			page("/profile")
+		else if (query.match(/friend\/.+$/))
+			page("/"+query)
+		else if (inviteToken){
 			page('/invite/' + inviteToken);
 		} else if (oauthCode) {
 				// getOAuthAccessToken(oauthCode);
