@@ -23,8 +23,10 @@ $(document).ready(function() {
 
 	if (CloudOS_Authenticated_Session()) {
 		Navbar_Show_Auth()
+		show_view('home-auth')
 	} else {
 		Navbar_Show_Anon()
+		show_view('home');
 	}
 
 	// --------------------------------------------
@@ -39,6 +41,15 @@ $(document).ready(function() {
 		} else if (oauthCode) {
 				// getOAuthAccessToken(oauthCode);
 			CloudOS_Get_OAuth_Access_Token(oauthCode);
+
+			if (CloudOS_Authenticated_Session()) {
+				Navbar_Show_Auth()
+				show_view('home-auth')
+				getMyProfile()
+			} else {
+				Navbar_Show_Anon()
+				show_view('home');
+			}
 		} else {
 			console.debug('Unrecognized query string: ', query);
 		}
@@ -96,7 +107,11 @@ $(document).ready(function() {
 	// --------------------------------------------
 	// View: home
 	function view_home() {
-		show_view('home');
+		if (CloudOS_Authenticated_Session()) {
+			show_view('home-auth')
+		} else {
+			show_view('home');
+		}
 		set_screen_title('');
 		currentView = 'home';
 	};

@@ -203,9 +203,9 @@
 			function(json) {
 				console.dir(json);
 				CloudOS_Save_Session(json.OAUTH_ECI);
-				$('li.nav-auth').show();
-				$('li.nav-anon').hide();
-				getMyProfile()
+				//$('li.nav-auth').show();
+				//$('li.nav-anon').hide();
+				//getMyProfile()
 			}, "json")
 	}
 	window.CloudOS_Get_OAuth_Access_Token = CloudOS_Get_OAuth_Access_Token;
