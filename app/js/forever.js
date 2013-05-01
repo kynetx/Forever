@@ -303,8 +303,9 @@ $(document).ready(function() {
 				// --------------------------------------------
 				// send invitation email
 				var subject = "Kynetx Forever Invitation";
-				var body = "You have been invited to Forever " +
-							"http://devcloud.krlcode.com/?invite=" + json.token;
+				var myName   = $('#myProfileName').val();
+				var body = myName + " has invited you to Forever, an evergreen addressbook based on Personal Clouds. Follow the link below to accept the invitation.\n\n" +
+							"http://forevr.us/?invite=" + json.token;
 				CloudOS_Send_Email(ename, email, subject, body,
 				  function(json) {
 						console.dir(json);
