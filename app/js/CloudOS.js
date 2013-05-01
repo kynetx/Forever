@@ -3,11 +3,11 @@
 
 	// ------------------------------------------------------------------------
 	// Personal Cloud Hostname
-	CloudOS.Host = "kibdev.kobj.net";
+	CloudOS.Host = "cs.kobj.net";
 
-	CloudOS.App_Key = "99D1D14C-B28A-11E2-9954-ED8DE71C24E1";
+	CloudOS.App_Key = "E3D243D4-B28B-11E2-A01C-1615FE2E5C38";
 
-	CloudOS.Callback_URL = "http://localhost/";
+	CloudOS.Callback_URL = "http://forevr.us/";
 
 	CloudOS.Session_Token = "none";
 
