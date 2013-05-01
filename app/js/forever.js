@@ -12,7 +12,6 @@ $(document).ready(function() {
 	page('/profile', view_profile);
 	page('/friend/:token', view_friend);
 	page('/logout', view_logout);
-	page('/test', view_test);
 	page('*', view_notfound);
 	page();
 
@@ -158,38 +157,6 @@ $(document).ready(function() {
 		CloudOS_Remove_Session();
 		Navbar_Show_Anon();
 		page('/');
-	};
-
-	// --------------------------------------------
-	// View: Test
-	function view_test() {
-		show_view('test');
-		set_screen_title('test');
-		currentView = 'test';
-
-		// Hello world test
-		CloudOS_Raise_Event('cloudos', 'libtest', { "Name": "Ed Orcutt" },
-			function(json) {
-				console.dir(json)
-			});
-
-		// Create Channel
-//		CloudOS_Create_Channel(
-//			function(json) {
-//				console.dir(json);
-//				console.debug("TOP LEVEL Channel: ", json.token)
-//			}
-//		);
-
-		CloudOS_Destroy_Channel("139e5a4dd3ab3d53f26a6d7c73c0e928",
-			function(json) {
-				console.debug("CloudOS_Destroy_Channel Callback");
-				console.dir(json);
-			}
-		);
-
-		var OAuth_URL = CloudOS_Get_OAuth_URL();
-		console.debug("OAuth_URL: ", OAuth_URL);
 	};
 
 	// --------------------------------------------
@@ -415,7 +382,7 @@ $(document).ready(function() {
 	// Friends Management
 
 	function getFriendsList() {
-		CloudOS_Subscription_List("namespace=Forever&relationship=friend", 
+		CloudOS_Subscription_List("namespace=Forever&relationship=friend",
 			function(json) {
 			  console.dir(json);
 				$('#table-friends').html('');
