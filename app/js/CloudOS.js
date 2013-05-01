@@ -2,13 +2,13 @@
 
 	// ------------------------------------------------------------------------
 	// Personal Cloud Hostname
-	var CloudOS_Host = "kibdev.kobj.net";
+	var CloudOS_Host = "cs.kobj.net";
 		window.CloudOS_Host = CloudOS_Host;
 
-	var CloudOS_App_Key = "67591932-AD30-11E2-AF99-7B86E71C24E1";
+	var CloudOS_App_Key = "E3D243D4-B28B-11E2-A01C-1615FE2E5C38";
 		window.CloudOS_App_Key = CloudOS_App_Key;
 
-	var CloudOS_Callback_URL = "http://devcloud.krlcode.com/";
+	var CloudOS_Callback_URL = "http://forevr.us/";
 		window.CloudOS_Callback_URL = CloudOS_Callback_URL;
 
 	var CloudOS_Session_Token = "none";
