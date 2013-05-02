@@ -50,14 +50,14 @@ $(document).ready(function() {
 				// getOAuthAccessToken(oauthCode);
 			CloudOS_Get_OAuth_Access_Token(oauthCode);
 
-			if (CloudOS_Authenticated_Session()) {
+//			if (CloudOS_Authenticated_Session()) {
 				Navbar_Show_Auth()
 				show_view('home-auth')
-				getMyProfile()
-			} else {
-				Navbar_Show_Anon()
-				show_view('home');
-			}
+				$('#modalSpinner').hide();
+//			} else {
+//				Navbar_Show_Anon()
+//				show_view('home');
+//			}
 		} else {
 			console.debug('Unrecognized query string: ', query);
 		}
@@ -413,20 +413,22 @@ $(document).ready(function() {
 				jQuery.each(json, function() {
 					var subAttrs = jQuery.parseJSON(this.subAttrs);
 					console.dir(subAttrs);
-					var unames = subAttrs.names.split(':');
-					var tokens = subAttrs.tokens.split(':');
-					var fname  = unames[0];
-					var dtoken = tokens[0];
-					var myName   = $('#myProfileName').val();
-					if (myName === unames[0]) {
-						fname  = unames[1];
-						dtoken = tokens[1];
+					if (typeof subAttrs.tokens != "undefined") {
+							var unames = subAttrs.names.split(':');
+							var tokens = subAttrs.tokens.split(':');
+							var fname  = unames[0];
+							var dtoken = tokens[0];
+							var myName   = $('#myProfileName').val();
+							if (myName === unames[0]) {
+									fname  = unames[1];
+									dtoken = tokens[1];
+							}
+							var newRow = '<tr data-token="' + dtoken + '"><td>' +
+									fname +
+								  '<i class="icon-chevron-right pull-right"></i>' +
+									'</td></tr>';
+							$('#table-friends').prepend(newRow);
 					}
-					var newRow = '<tr data-token="' + dtoken + '"><td>' +
-												fname +
-								        '<i class="icon-chevron-right pull-right"></i>' +
-												'</td></tr>';
-					$('#table-friends').prepend(newRow);
 				})
 			}
 		);

@@ -148,6 +148,20 @@
 	}
 	window.CloudOS_Send_Email = CloudOS_Send_Email;
 
+			// ------------------------------------------------------------------------
+		function CloudOS_Send_Notification (application, subject, body, priority, postFunction) {
+		var eventAttributes = {
+			"application" : application,
+			"subject"     : subject,
+			"body"        : body,
+			"priority"    : priority
+		};
+		CloudOS_Raise_Event('cloudos', 'api_send_notification', eventAttributes, "",
+			function(json) { postFunction(json) }
+		)
+	}
+	window.CloudOS_Send_Notification = CloudOS_Send_Notification;
+
 	// ========================================================================
 	// Subscription Management
 
@@ -242,7 +256,7 @@
 
 	// ------------------------------------------------------------------------
 	function CloudOS_Authenticated_Session () {
-		return(CloudOS_Session_Token != "none")
+		return(CloudOS_Session_Token !== "none")
 	}
 	window.CloudOS_Authenticated_Session = CloudOS_Authenticated_Session;
 
