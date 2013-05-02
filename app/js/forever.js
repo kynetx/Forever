@@ -120,7 +120,7 @@ $(document).ready(function() {
 		} else {
 			show_view('home');
 		}
-		set_screen_title('');
+		//set_screen_title('');
 		currentView = 'home';
 	};
 
@@ -129,7 +129,7 @@ $(document).ready(function() {
 	function view_friends() {
 		show_view('friends');
 		getFriendsList();
-		set_screen_title('Friends');
+		// set_screen_title('Friends');
 		$('#modalSpinner').hide();
 		currentView = 'friends';
 	};
@@ -140,7 +140,7 @@ $(document).ready(function() {
 		$('#modalSpinner').show();
 		getForeverInvitations();
 		show_view('finder');
-		set_screen_title('Finder');
+		// set_screen_title('Finder');
 		currentView = 'finder';
 	};
 
@@ -159,7 +159,7 @@ $(document).ready(function() {
 	function view_profile() {
 		show_view('profile');
 		getMyProfile();
-		set_screen_title('Profile');
+		// set_screen_title('Profile');
 		currentView = 'profile';
 	};
 
@@ -170,7 +170,7 @@ $(document).ready(function() {
 		console.debug('Invite Token: ', token);
 		showFriendProfile(token);
 		show_view('friend');
-		set_screen_title('Friend');
+		// set_screen_title('Friend');
 		currentView = 'friend';
 	};
 
@@ -186,7 +186,7 @@ $(document).ready(function() {
 	// View: 404
 	function view_notfound() {
 		show_view('404');
-		set_screen_title('404');
+		// set_screen_title('404');
 		currentView = '404';
 	};
 
@@ -365,10 +365,10 @@ $(document).ready(function() {
 					$('#hostess-email').text(json.myProfileEmail);
 					$('#hostess-phone').text(json.myProfilePhone);
 					show_view('invite');
-					set_screen_title('Invitation');
+					// set_screen_title('Invitation');
 				} else {
 					show_view('invite-expired');
-					set_screen_title('Invitation');
+					// set_screen_title('Invitation');
 				}
 				$('#modalSpinner').hide();
 			}
