@@ -449,6 +449,15 @@ $(document).ready(function() {
 
 	// --------------------------------------------
 	function showFriendProfile(token) {
+		$('#friend-photo').attr('src', 'img/default.png');
+		$('#friend-name').text('');
+		$('#friend-email').text('');
+		$('#friend-phone').text('');
+
+		$('#btn-friend-tel').attr('href', 'tel:');
+		$('#btn-friend-sms').attr('href', 'sms:');
+		$('#btn-friend-email').attr('href', 'mailto:');
+
 		CloudOS_Get_Friend_Profile(token,
 			function(json) {
 				console.dir(json);
