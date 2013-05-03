@@ -394,6 +394,7 @@ $(document).ready(function() {
 														ourToken, JSON.stringify(attrs),
 						function(json) {
 							console.dir(json);
+							page("/friends");
 						}
 					);
 				}
