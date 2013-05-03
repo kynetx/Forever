@@ -24,7 +24,16 @@
 			'?' + eventParameters;
 
 		console.debug('CloudOS_Session_Token: ', window.CloudOS_Session_Token);
-		$.post(esl, eventAttributes, function(json) {postFunction(json)}, "json")
+		// $.post(esl, eventAttributes, function(json) {postFunction(json)}, "json")
+		$.ajax({
+				type: 'POST',
+				url: esl,
+				data: eventAttributes,
+				async: false,
+				dataType: 'json',
+				headers: {'Kobj-Session' : CloudOS_Session_Token},
+				success: function(json) { postFunction(json) },
+		})
 	}
 	window.CloudOS_Raise_Event = CloudOS_Raise_Event;
 
@@ -149,12 +158,13 @@
 	window.CloudOS_Send_Email = CloudOS_Send_Email;
 
 			// ------------------------------------------------------------------------
-		function CloudOS_Send_Notification (application, subject, body, priority, postFunction) {
+		function CloudOS_Send_Notification (application, subject, body, priority, token, postFunction) {
 		var eventAttributes = {
 			"application" : application,
 			"subject"     : subject,
 			"body"        : body,
-			"priority"    : priority
+			"priority"    : priority,
+			"token"       : token
 		};
 		CloudOS_Raise_Event('cloudos', 'api_send_notification', eventAttributes, "",
 			function(json) { postFunction(json) }
@@ -213,14 +223,16 @@
 				"code"         : code
 		};
 
-		$.post(url,data,
-			function(json) {
-				console.dir(json);
-				CloudOS_Save_Session(json.OAUTH_ECI);
-				//$('li.nav-auth').show();
-				//$('li.nav-anon').hide();
-				//getMyProfile()
-			}, "json")
+		$.ajax({
+			type: 'POST',
+				url: url,
+				data: data,
+				async: false,
+				dataType: 'json',
+				success: function(json) {
+					CloudOS_Save_Session(json.OAUTH_ECI);
+				},
+			})
 	}
 	window.CloudOS_Get_OAuth_Access_Token = CloudOS_Get_OAuth_Access_Token;
 

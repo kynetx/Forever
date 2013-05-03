@@ -50,14 +50,14 @@ $(document).ready(function() {
 				// getOAuthAccessToken(oauthCode);
 			CloudOS_Get_OAuth_Access_Token(oauthCode);
 
-//			if (CloudOS_Authenticated_Session()) {
+			if (CloudOS_Authenticated_Session()) {
 				Navbar_Show_Auth()
 				show_view('home-auth')
 				$('#modalSpinner').hide();
-//			} else {
-//				Navbar_Show_Anon()
-//				show_view('home');
-//			}
+			} else {
+				Navbar_Show_Anon()
+				show_view('home');
+			}
 		} else {
 			console.debug('Unrecognized query string: ', query);
 		}
