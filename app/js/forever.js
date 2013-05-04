@@ -306,7 +306,7 @@ $(document).ready(function() {
 						// Add new invitation to table
 						var newRow = '<tr><td>' +
 											 json.name +
-											 '<button class="btn btn-mini btn-danger btn-finder-action pull-right" data-token="'+
+											 '<button class="btn btn-mini btn-danger btn-finder-action btn-finder-action-revoke pull-right" data-token="'+
 												 json.token + '">Revoke</button>' +
 											 '<button class="btn btn-mini btn-primary btn-finder-action pull-right">Resend</button>' +
 											 '</td></tr>';
