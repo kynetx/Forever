@@ -5,6 +5,12 @@ $(document).ready(function() {
 	var OAuth_Sqtag_URL = CloudOS_Get_OAuth_URL();
 	$('a.oauth-sqtag-url').attr('href', OAuth_Sqtag_URL);
 
+	// --------------------------------------------
+	// Click handler for Add Link on Homepage
+	$('#navAddLink').click(function() {
+			$('#modalAddLink').modal();
+	});
+
 	page('/', view_home);
 	page('/friends', view_friends);
 	page('/finder', view_finder);
