@@ -275,7 +275,8 @@ $(document).ready(function() {
 									val.name +
 									'<button class="btn btn-mini btn-danger btn-finder-action btn-finder-action-revoke pull-right" data-token="'+
 									val.token + '">Revoke</button>' +
-									'<button class="btn btn-mini btn-primary btn-finder-action pull-right">Resend</button>' +
+									'<button class="btn btn-mini btn-primary btn-finder-action btn-finder-action-resend pull-right" data-token="'+
+									val.token + '" data-name="'+val.name+'" data-email="'+val.email+'">Resend</button>' +
 									'</td></tr>';
 						$('#table-finder').prepend(newRow);
 					})
@@ -314,25 +315,44 @@ $(document).ready(function() {
 											 json.name +
 											 '<button class="btn btn-mini btn-danger btn-finder-action btn-finder-action-revoke pull-right" data-token="'+
 												 json.token + '">Revoke</button>' +
-											 '<button class="btn btn-mini btn-primary btn-finder-action pull-right">Resend</button>' +
+											 '<button class="btn btn-mini btn-primary btn-finder-action btn-finder-action-resend pull-right" data-token="'+
+												 json.token + '" data-name="'+json.name+'" data-email="'+json.email+'">Resend</button>' +
 											 '</td></tr>';
 						$('#table-finder').prepend(newRow);
 						$('#modalSpinner').hide();
 				})
 
-				// --------------------------------------------
-				// send invitation email
-				var subject = "Kynetx Forever Invitation";
-				var myName   = $('#myProfileName').val();
-				var body = myName + " has invited you to Forever, an evergreen addressbook based on Personal Clouds. Follow the link below to accept the invitation.\n\n" +
-							"http://forevr.us/?invite=" + json.token;
-				CloudOS_Send_Email(ename, email, subject, body,
-				  function(json) {
-						console.dir(json);
-					})
+				sendForeverInvitation(ename, email, json.token)
 			}
 		);
 	})
+
+	// --------------------------------------------
+	function sendForeverInvitation(name, email, token) {
+		var subject = "Kynetx Forever Invitation";
+		var myName   = $('#myProfileName').val();
+		var body = myName + " has invited you to Forever, an evergreen addressbook based on Personal Clouds. Follow the link below to accept the invitation.\n\n" +
+							"http://forevr.us/?invite=" + token;
+
+		CloudOS_Send_Email(name, email, subject, body,
+			function(json) {
+				console.dir(json);
+				$('#alert-finder-success').show('fast').delay(7000).hide('fast')
+			})
+	}
+
+	// --------------------------------------------
+	// Finder Resend Invitation
+	$('#table-finder').on('click','button.btn-finder-action-resend',
+		function(event){
+			var token = $(this).attr('data-token');
+			var name = $(this).attr('data-name');
+			var email = $(this).attr('data-email');
+			console.debug("resend token: ", token);
+
+			sendForeverInvitation(name, email, token)
+		}
+	)
 
 	// --------------------------------------------
 	// Finder Revoke Invitation
