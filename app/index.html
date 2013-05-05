@@ -236,25 +236,31 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfileName">Name</label>
 							<div class="controls">
-								<input type="text" id="myProfileName" name="myProfileName">
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">Name</span>
+									<input  tabindex="1" class="" type="text" id="myProfileName" name="myProfileName" placeholder="(Required)" required="">
+								</div>
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfileEmail">Email</label>
 							<div class="controls">
-								<input type="text" id="myProfileEmail" name="myProfileEmail">
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">Mobile</span>
+									<input tabindex="2" type="tel" id="myProfilePhone" class="prependedInput" name="myProfilePhone" placeholder="phone">
+								</div>
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfilePhone">Phone</label>
 							<div class="controls">
-								<input type="text" id="myProfilePhone" name="myProfilePhone">
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">Personal</span>
+									<input tabindex="3" type="tel" id="myProfileEmail" class="prependedInput" name="myProfileEmail" placeholder="email">
+								</div>
 							</div>
 						</div>
+
 						<div class="control-group">
-							<label class="control-label" for="myProfilePhoto-preview">Photo</label>
 							<div class="controls">
 								<img id="myProfilePhoto-preview" class="mycloud-photo-preview" alt="" src="">
 							</div>
@@ -267,15 +273,13 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfileDescription">Bio</label>
 							<div class="controls">
-								<textarea id="myProfileDescription" name="myProfileDescription"></textarea>
+								<textarea tabindex="4" rows="3" id="myProfileDescription" class="input-xlarge" name="myProfileDescription" placeholder="Describe yourself"></textarea>
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfileNotes">Notes</label>
 							<div class="controls">
-								<textarea id="myProfileNotes" name="myProfileNotes"></textarea>
+								<textarea tabindex="5" rows="3" id="myProfileNotes" class="input-xlarge" name="myProfileNotes" placeholder="Enter additional notes about yourself"></textarea>
 							</div>
 						</div>
 						<div class="control-group">
