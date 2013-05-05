@@ -204,12 +204,18 @@ $(document).ready(function() {
 		$('#modalSpinner').show();
 		CloudOS_Get_MyProfile(function(json) {
 			console.dir(json);
+			var myProfileNotes = json.myProfileNotes;
+			var myProfileDescription = json.myProfileDescription;
+
+			if (myProfileNotes === 'null') {myProfileNotes = ''}
+			if (myProfileDescription === 'null') {myProfileDescription = ''}
+
 			$('#modalSpinner').hide();
 			$('#myProfileName').val(json.myProfileName);
 			$('#myProfileEmail').val(json.myProfileEmail);
 			$('#myProfilePhone').val(json.myProfilePhone);
-			$('#myProfileDescription').text(json.myProfileDescription);
-			$('#myProfileNotes').text(json.myProfileNotes);
+			$('#myProfileDescription').text(myProfileDescription);
+			$('#myProfileNotes').text(myProfileNotes);
 			$('#myProfilePhoto').val(json.myProfilePhoto);
 			$('#myProfilePhoto-preview').attr('src', json.myProfilePhoto);
 		});
