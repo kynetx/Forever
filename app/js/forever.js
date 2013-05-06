@@ -406,6 +406,7 @@ $(document).ready(function() {
 
 					$('#btn-invitation-accept').attr('data-token', token);
 					$('#btn-invitation-accept').attr('data-name', iname);
+					$('#btn-invitation-accept').attr('data-photo', json.myProfilePhoto);
 					$('#hostess-photo').attr('src', json.myProfilePhoto);
 					$('#hostess-name').text(json.myProfileName);
 					$('#hostess-email').text(json.myProfileEmail);
@@ -429,11 +430,14 @@ $(document).ready(function() {
 				function(json) {
 					var ourName  = $('#btn-invitation-accept').attr('data-name');
 					var ourToken = $('#btn-invitation-accept').attr('data-token');
+					var ourPhoto = $('#btn-invitation-accept').attr('data-photo');
 					var myName   = $('#myProfileName').val();
+					var myPhoto  = $('#myProfilePhoto').val();
 					var myToken  = json.token;
 					var attrs  = {
 							"names"  : myName+":"+ourName,
 							"tokens" : myToken+":"+ourToken,
+							"photos" : myPhoto+";"+ourPhoto,
 							"pdsKey" : ourToken
 					};
 					CloudOS_Subscribe("Forever", "Forever Friend", "friend-friend",
