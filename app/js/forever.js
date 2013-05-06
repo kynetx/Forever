@@ -426,6 +426,7 @@ $(document).ready(function() {
 	// Accept Forever Invitation
 	$('#btn-invitation-accept').on('click',
 		function(event){
+			$('#modalSpinner').show();
 			CloudOS_Create_Channel(
 				function(json) {
 					var ourName  = $('#btn-invitation-accept').attr('data-name');
@@ -444,7 +445,8 @@ $(document).ready(function() {
 														ourToken, JSON.stringify(attrs),
 						function(json) {
 							console.dir(json);
-							page("/friends");
+							setTimeout('page(\'/friends\')', 2000);
+							// page("/friends");
 						}
 					);
 				}
