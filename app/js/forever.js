@@ -17,6 +17,7 @@ $(document).ready(function() {
 	page('/invite/:token', view_invite);
 	page('/profile', view_profile);
 	page('/friend/:token', view_friend);
+	page('/message/:token', view_message);
 	page('/logout', view_logout);
 	page('*', view_notfound);
 	page();
@@ -49,6 +50,8 @@ $(document).ready(function() {
 		else if (query === "profile")
 			page("/profile")
 		else if (query.match(/friend\/.+$/))
+			page("/"+query)
+		else if (query.match(/message\/.+$/))
 			page("/"+query)
 		else if (inviteToken){
 			page('/invite/' + inviteToken);
@@ -178,6 +181,17 @@ $(document).ready(function() {
 		show_view('friend');
 		// set_screen_title('Friend');
 		currentView = 'friend';
+	};
+
+	// --------------------------------------------
+	// View: message
+	function view_message(ctx) {
+		var token = ctx.params.token;
+		console.debug('Friend Token: ', token);
+		showFriendMessage(token);
+		show_view('message');
+		// set_screen_title('Message');
+		currentView = 'message';
 	};
 
 	// --------------------------------------------
@@ -481,12 +495,25 @@ $(document).ready(function() {
 	)
 
 	// --------------------------------------------
+	// Click handler for Send Message to a Friend
+	$('#btn-friend-message').on('click',
+		function(event){
+			var token = $(this).attr('data-token');
+			console.debug("send message token: ", token);
+			page('/message/'+token)
+
+			return false;
+		}
+	)
+
+	// --------------------------------------------
 	function showFriendProfile(token) {
 		$('#friend-photo').attr('src', 'img/default.png');
 		$('#friend-name').text('');
 		$('#friend-email').text('');
 		$('#friend-phone').text('');
 
+		$('#btn-friend-message').attr('data-token', '');
 		$('#btn-friend-tel').attr('href', 'tel:');
 		$('#btn-friend-sms').attr('href', 'sms:');
 		$('#btn-friend-email').attr('href', 'mailto:');
@@ -501,6 +528,7 @@ $(document).ready(function() {
 					$('#friend-email').text(json.myProfileEmail);
 					$('#friend-phone').text(json.myProfilePhone);
 
+					$('#btn-friend-message').attr('data-token', token);
 					$('#btn-friend-tel').attr('href', 'tel:'+json.myProfilePhone);
 					$('#btn-friend-sms').attr('href', 'sms:'+json.myProfilePhone);
 					$('#btn-friend-email').attr('href', 'mailto:'+json.myProfileEmail);
@@ -510,5 +538,52 @@ $(document).ready(function() {
 			}
 		)
 	}
+
+	// --------------------------------------------
+	function showFriendMessage(token) {
+		$('#friend-name').text('');
+
+		$('#messageToken').val('');
+		$('#messageName').val('');
+		$('#messageSubject').val('');
+		$('#messageBody').val('');
+
+		CloudOS_Get_Friend_Profile(token,
+			function(json) {
+				console.dir(json);
+				if (json.status) {
+
+					$('#messageToken').val(token);
+					$('#messageName').val(json.myProfileName);
+
+					$('#modalSpinner').hide();
+				}
+			}
+		)
+	}
+
+	// --------------------------------------------
+	// Message submit handler
+
+	$('form.form-message').submit(function(event) {
+		var token   = $('#messageToken').val();
+		var subject = $('#messageSubject').val();
+		var body    = $('#messageBody').val();
+		var myName   = $('#myProfileName').val();
+		var theSubject = myName + ": " + subject;
+
+		//console.debug("token: ", token);
+		//console.debug("subject: ", subject);
+		//console.debug("body: ", body);
+
+		event.preventDefault();
+		$('#modalSpinner').show();
+
+		CloudOS_Send_Notification("Forever", theSubject, body, 2, token,
+			function(json) {
+				$('#modalSpinner').hide();
+				$('#alert-message-success').show('fast').delay(7000).hide('fast')
+		})
+	})
 
 });

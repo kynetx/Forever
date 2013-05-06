@@ -308,7 +308,7 @@
 							<h4 class="media-heading" id="friend-phone"></h4>
 						</div>
 					</div>
-					<button class="btn btn-primary btn-large btn-block">Send Message</button>
+					<button class="btn btn-primary btn-large btn-block" id="btn-friend-message" data-token="">Send Message</button>
 					<a href="tel:" class="btn btn-primary btn-large btn-block" id="btn-friend-tel">Make Phone Call</a>
 					<a href="sms:" class="btn btn-primary btn-large btn-block" id="btn-friend-sms">Send Text Message</a>
 					<a href="mailto:" class="btn btn-primary btn-large btn-block" id="btn-friend-email">Send Email</a>
@@ -320,6 +320,7 @@
       <div id="view-message" class="view row-fluid" style="display:none;">
         <div class="span12">
  					<form class="form-message form-horizontal">
+						<input type="hidden" name="messageToken" id="messageToken" value="">
 						<div class="control-group">
 							<label class="control-label"></label>
 							<div class="controls">
@@ -329,15 +330,24 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="messageSubject">Subject</label>
 							<div class="controls">
-								<input type="text" id="messageSubject" name="messageSubject">
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">To</span>
+									<input type="text" id="messageName" name="messageName">
+								</div>
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="messageBody">Body</label>
 							<div class="controls">
-								<textarea id="messageBody" name="messageBody"></textarea>
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">Subject</span>
+									<input type="text" id="messageSubject" name="messageSubject">
+								</div>
+							</div>
+						</div>
+						<div class="control-group">
+							<div class="controls">
+								<textarea id="messageBody" class="input-xlarge" name="messageBody"></textarea>
 							</div>
 						</div>
 						<div class="control-group">
