@@ -21,7 +21,7 @@
 		var esl = 'https://' + window.CloudOS_Host + '/sky/event/' +
 			CloudOS_Session_Token + '/' +  eid + '/' +
 			eventDomain + '/' + eventType +
-			'?' + eventParameters;
+			'?_rids=a169x727&' + eventParameters;
 
 		console.debug('CloudOS_Session_Token: ', window.CloudOS_Session_Token);
 		// $.post(esl, eventAttributes, function(json) {postFunction(json)}, "json")
@@ -86,7 +86,8 @@
 	window.CloudOS_Get_MyProfile = CloudOS_Get_MyProfile;
 
 	function CloudOS_Update_MyProfile (eventAttributes, postFunction) {
-		var eventParameters = "_rids=a169x727&element=profileUpdate.post";
+		var eventParameters = "element=profileUpdate.post";
+		// var eventParameters = "_rids=a169x727&element=profileUpdate.post";
 		CloudOS_Raise_Event('web', 'submit', eventAttributes, eventParameters,
 			function(json) { postFunction(json) }
 		);
