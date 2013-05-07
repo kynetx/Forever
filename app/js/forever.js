@@ -13,6 +13,7 @@ $(document).ready(function() {
 
 	page('/', view_home);
 	page('/login*', view_login);
+	page('/signup*', view_signup);
 	page('/about', view_about);
 	page('/friends', view_friends);
 	page('/finder', view_finder);
@@ -48,6 +49,8 @@ $(document).ready(function() {
 		if (query === "friends")
 			page("/friends")
 		else if (query.match(/login\&.+$/))
+			page("/"+query)
+		else if (query.match(/signup\&.+$/))
 			page("/"+query)
 		else if (query === "about")
 			page("/about")
@@ -139,6 +142,26 @@ $(document).ready(function() {
 				Navbar_Show_Auth()
 				show_view('home-auth')
 				$('#modalSpinner').hide();
+		} else {
+				Navbar_Show_Anon()
+				show_view('home');
+		}
+	};
+
+	// --------------------------------------------
+	// View: signup
+	function view_signup() {
+		var oauthCode = getQueryVariable('code');
+		var token = getQueryVariable('token');
+		console.debug("view_signup");
+		console.debug("code: ", oauthCode);
+		console.debug("token: ", token);
+
+		CloudOS_Get_OAuth_Access_Token(oauthCode);
+
+		if (CloudOS_Authenticated_Session()) {
+				Navbar_Show_Auth();
+				acceptInvitation(token);
 		} else {
 				Navbar_Show_Anon()
 				show_view('home');
@@ -423,9 +446,19 @@ $(document).ready(function() {
 				console.dir(json);
 				if (json.status) {
 					var iname = json.myProfileName;
+					var OAuth_URL = CloudOS_Get_OAuth_URL("signup/"+token);
+
+					if (CloudOS_Authenticated_Session()) {
+							$('#btn-invitation-accept').show();
+							$('#link-invitation-accept').hide();
+					} else {
+							$('#link-invitation-accept').show();
+							$('#btn-invitation-accept').hide();
+					}
 
 					$('#btn-invitation-accept').attr('data-token', token);
 					$('#btn-invitation-accept').attr('data-name', iname);
+					$('#link-invitation-accept').attr('href', OAuth_URL);
 					$('#btn-invitation-accept').attr('data-photo', json.myProfilePhoto);
 					$('#hostess-photo').attr('src', json.myProfilePhoto);
 					$('#hostess-name').text(json.myProfileName);
@@ -440,6 +473,44 @@ $(document).ready(function() {
 				$('#modalSpinner').hide();
 			}
 		);
+	}
+
+	// --------------------------------------------
+	function acceptInvitation(token) {
+		CloudOS_Get_Friend_Profile(token,
+			function(json) {
+				console.dir(json);
+					$('#btn-invitation-accept').attr('data-token', token);
+					$('#btn-invitation-accept').attr('data-name', json.myProfileName);
+					$('#btn-invitation-accept').attr('data-photo', json.myProfilePhoto);
+			});
+
+			CloudOS_Create_Channel(
+					function(json) {
+							var ourName  = $('#btn-invitation-accept').attr('data-name');
+							var ourToken = $('#btn-invitation-accept').attr('data-token');
+							var ourPhoto = $('#btn-invitation-accept').attr('data-photo');
+							var myName   = $('#myProfileName').val();
+							var myPhoto  = $('#myProfilePhoto').val();
+							var myToken  = json.token;
+							var attrs  = {
+									"names"  : myName+":"+ourName,
+									"tokens" : myToken+":"+ourToken,
+									"photos" : myPhoto+";"+ourPhoto,
+									"pdsKey" : ourToken
+							};
+							CloudOS_Subscribe("Forever", "Forever Friend", "friend-friend",
+																ourToken, JSON.stringify(attrs),
+																function(json) {
+																		console.dir(json);
+																		setTimeout('page(\'/friends\')', 2000);
+																		// page("/friends");
+																}
+															 );
+					}
+			)
+			return false;
+															 
 	}
 
 	// --------------------------------------------
