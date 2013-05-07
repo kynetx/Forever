@@ -202,11 +202,11 @@
 	// OAuth functions
 
 	// ------------------------------------------------------------------------
-	function CloudOS_Get_OAuth_URL() {
+	function CloudOS_Get_OAuth_URL(fragment) {
 		var client_state = Math.floor(Math.random()*9999999);
 		var url = 'https://' + CloudOS_Host +
 			'/oauth/authorize?response_type=code' +
-			'&redirect_uri=' + encodeURIComponent(CloudOS_Callback_URL) +
+			'&redirect_uri=' + encodeURIComponent(CloudOS_Callback_URL  + fragment) +
 			'&client_id=' + CloudOS_App_Key +
 			'&state=' + client_state;
 

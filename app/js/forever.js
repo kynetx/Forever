@@ -2,7 +2,7 @@ $(document).ready(function() {
 
 	// --------------------------------------------
 	// Build OAuth URL and update links on homepage
-	var OAuth_Sqtag_URL = CloudOS_Get_OAuth_URL();
+	var OAuth_Sqtag_URL = CloudOS_Get_OAuth_URL("login");
 	$('a.oauth-sqtag-url').attr('href', OAuth_Sqtag_URL);
 
 	// --------------------------------------------
@@ -12,6 +12,7 @@ $(document).ready(function() {
 	});
 
 	page('/', view_home);
+	page('/login*', view_login);
 	page('/about', view_about);
 	page('/friends', view_friends);
 	page('/finder', view_finder);
@@ -43,9 +44,11 @@ $(document).ready(function() {
 	console.debug("QUERY: ", query);
 	if (query != "") {
 		var inviteToken = getQueryVariable('invite');
-		var oauthCode = getQueryVariable('code');
+		//var oauthCode = getQueryVariable('code');
 		if (query === "friends")
 			page("/friends")
+		else if (query.match(/login\&.+$/))
+			page("/"+query)
 		else if (query === "about")
 			page("/about")
 		else if (query === "finder")
@@ -58,18 +61,6 @@ $(document).ready(function() {
 			page("/"+query)
 		else if (inviteToken){
 			page('/invite/' + inviteToken);
-		} else if (oauthCode) {
-				// getOAuthAccessToken(oauthCode);
-			CloudOS_Get_OAuth_Access_Token(oauthCode);
-
-			if (CloudOS_Authenticated_Session()) {
-				Navbar_Show_Auth()
-				show_view('home-auth')
-				$('#modalSpinner').hide();
-			} else {
-				Navbar_Show_Anon()
-				show_view('home');
-			}
 		} else {
 			console.debug('Unrecognized query string: ', query);
 		}
@@ -134,6 +125,24 @@ $(document).ready(function() {
 		}
 		//set_screen_title('');
 		currentView = 'home';
+	};
+
+	// --------------------------------------------
+	// View: login
+	function view_login() {
+		var oauthCode = getQueryVariable('code');
+		console.debug("view_login");
+
+		CloudOS_Get_OAuth_Access_Token(oauthCode);
+
+		if (CloudOS_Authenticated_Session()) {
+				Navbar_Show_Auth()
+				show_view('home-auth')
+				$('#modalSpinner').hide();
+		} else {
+				Navbar_Show_Anon()
+				show_view('home');
+		}
 	};
 
 	// --------------------------------------------
