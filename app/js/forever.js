@@ -12,6 +12,7 @@ $(document).ready(function() {
 	});
 
 	page('/', view_home);
+	page('/about', view_about);
 	page('/friends', view_friends);
 	page('/finder', view_finder);
 	page('/invite/:token', view_invite);
@@ -45,6 +46,8 @@ $(document).ready(function() {
 		var oauthCode = getQueryVariable('code');
 		if (query === "friends")
 			page("/friends")
+		else if (query === "about")
+			page("/about")
 		else if (query === "finder")
 			page("/finder")
 		else if (query === "profile")
@@ -131,6 +134,14 @@ $(document).ready(function() {
 		}
 		//set_screen_title('');
 		currentView = 'home';
+	};
+
+	// --------------------------------------------
+	// View: about
+	function view_about() {
+		show_view('about');
+		$('#modalSpinner').hide();
+		currentView = 'about';
 	};
 
 	// --------------------------------------------
