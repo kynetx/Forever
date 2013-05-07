@@ -190,6 +190,7 @@ $(document).ready(function() {
 	// View: friend finder
 	function view_finder() {
 		$('#modalSpinner').show();
+		initInvitationForm();
 		getForeverInvitations();
 		show_view('finder');
 		// set_screen_title('Finder');
@@ -317,6 +318,27 @@ $(document).ready(function() {
 
 	// ========================================================================
 	// Friend Finder
+
+	// --------------------------------------------
+	// https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png
+
+	function initInvitationForm() {
+			var myName   = $('#myProfileName').val();
+			var myPhoto  = $('#myProfilePhoto').val();
+
+			console.debug("myName: ", myName);
+			console.debug("myPhoto: ", myPhoto);
+
+			if (myName === '' || myPhoto === 'https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png') {
+					$("form.form-finder span.help-block").show();
+					$("form.form-finder input").prop('disabled', true);
+					$("form.form-finder button").prop('disabled', true);
+			} else {
+			$("form.form-finder span.help-block").hide();
+			$("form.form-finder input").prop('disabled', false);
+			$("form.form-finder button").prop('disabled', false);
+			}
+	}
 
 	// --------------------------------------------
 	// GET list of Forever Invitations
