@@ -5,7 +5,9 @@ import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
@@ -14,28 +16,29 @@ import org.openqa.selenium.firefox.FirefoxDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
-public class TestOAuth {
+public class TestForever {
 
-	private WebDriver driver;
-	private String baseUrl;
-	private int timeout = 60; // Timeout in seconds
-	private StringBuffer verificationErrors = new StringBuffer();
+	private static WebDriver driver;
+	private static WebDriverWait wait;
+	private static String baseUrl = "http://forevr.us/";
+	private static String squareTagUrl = "https://squaretag.com/app.html";
+	private static int timeout = 60; // Timeout in seconds
+	private static StringBuffer verificationErrors = new StringBuffer();
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeClass
+	public static void setUp() throws Exception {
 		System.setProperty("webdriver.chrome.driver", "/home/jessie/libs/bin/chromedriver");
 		driver = new FirefoxDriver();
-		baseUrl = "http://forevr.us/";
+		wait = new WebDriverWait(driver, timeout);
 		//driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 	}
 
 	@Test
-	public void testLogin() throws Exception {
-		WebDriverWait wait = new WebDriverWait(driver, timeout);
+	public void testOAuth() throws Exception {
 		
 		String userEmail = "cloudos_test0@kynetx.com";
 		String userPassword = "fizzbazz";
-		driver.get(baseUrl + "/");
+		driver.get(baseUrl);
 		
 		// First things first, let's make sure we're not currently logged in
 		if(isElementVisible(By.linkText("Logout"))){
@@ -91,21 +94,63 @@ public class TestOAuth {
 		
 		// Ensure the message is correct (implies that the linking worked)
 		assertEquals("Forever is linked to your personal cloud", driver.findElement(linkedSuccessfulMessage).getText());
+	}
+	
+	@Test
+	public void testProfile() throws Exception {
+		// Open up the menu...
+		driver.findElement(By.cssSelector("div.navbar-inner .container-fluid button.btn")).click();
+		driver.findElement(By.linkText("Profile")).click();
+		
+		// Wait for profile to load...
+		By profileName = By.cssSelector("input[name=myProfileName]");
+		wait.until(ExpectedConditions.visibilityOfElementLocated(profileName));
+		
+		assertEquals("Bob Smith", driver.findElement(profileName).getAttribute("value"));
+		
+		// Modify and save the field
+		driver.findElement(profileName).sendKeys(" Test");
+		driver.findElement(By.cssSelector("#view-profile form button[type=submit]")).click();
+		
+		// Wait until we get a response
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("alert-profile-success")));
+		
+		// Go to SquareTag
+		driver.get(squareTagUrl);
+		
+		// Open up the profile page on SquareTag
+		driver.findElement(By.id("navAvatar")).click();
+		driver.findElement(By.cssSelector("div.navbar-inner ul.dropdown-menu a")).click();
+		
+		// Wait for it to load...
+		wait.until(ExpectedConditions.visibilityOfElementLocated(profileName));
+		
+		// Check to make sure adding the " Test" to the profile name worked
+		assertEquals("Bob Smith Test", driver.findElement(profileName).getAttribute("value"));
+		
+		// Modify and save the field
+		driver.findElement(profileName).clear();
+		driver.findElement(profileName).sendKeys("Bob Smith");
+		driver.findElement(By.cssSelector("#cloudAppPanel-a169x672-content form button[type=submit]")).click();
+		
+		// Wait until we get a response
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#cloudAppPanel-a169x672-content div.alert.alert-success")));
+		
+		// Check if our changes in SquareTag show up in Forever
+		driver.get(baseUrl);
 		
 		// Open up the menu...
 		driver.findElement(By.cssSelector("div.navbar-inner .container-fluid button.btn")).click();
 		driver.findElement(By.linkText("Profile")).click();
 		
 		// Wait for profile to load...
-		By profileName = By.id("myProfileName");
 		wait.until(ExpectedConditions.visibilityOfElementLocated(profileName));
 		
 		assertEquals("Bob Smith", driver.findElement(profileName).getAttribute("value"));
-		
 	}
 
-	@After
-	public void tearDown() throws Exception {
+	@AfterClass
+	public static void testFixtureTearDown() throws Exception {
 		driver.quit();
 		String verificationErrorString = verificationErrors.toString();
 		if (!"".equals(verificationErrorString)) {
