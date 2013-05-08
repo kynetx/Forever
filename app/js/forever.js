@@ -652,7 +652,33 @@ $(document).ready(function() {
 					$('#btn-friend-sms').attr('href', 'sms:'+json.myProfilePhone);
 					$('#btn-friend-email').attr('href', 'mailto:'+json.myProfileEmail);
 
-					$('#modalSpinner').hide();
+					$('#btn-friend-message').show();
+
+					if (json.myProfilePhone) {
+						$('#friend-phone').show();
+						$('#btn-friend-tel').show();
+						$('#btn-friend-sms').show();
+					} else {
+						$('#friend-phone').hide();
+						$('#btn-friend-tel').hide();
+						$('#btn-friend-sms').hide();
+					}
+
+					if (json.myProfileEmail) {
+						$('#friend-email').show();
+						$('#btn-friend-email').show();
+					} else {
+						$('#friend-email').hide();
+						$('#btn-friend-email').hide();
+					}
+
+				} else {
+						$('#modalSpinner').hide();
+						$('#friend-name').text('Profile Unavailable');
+						$('#btn-friend-tel').hide();
+						$('#btn-friend-sms').hide();
+						$('#btn-friend-email').hide();
+						$('#btn-friend-message').hide();
 				}
 			}
 		)
