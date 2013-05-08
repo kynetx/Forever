@@ -486,6 +486,25 @@ $(document).ready(function() {
 					$('#hostess-name').text(json.myProfileName);
 					$('#hostess-email').text(json.myProfileEmail);
 					$('#hostess-phone').text(json.myProfilePhone);
+
+					if (json.myProfileName) {
+						$('#hostess-name').show();
+					} else {
+						$('#hostess-name').hide();
+					}
+
+					if (json.myProfilePhone) {
+						$('#hostess-phone').show();
+					} else {
+						$('#hostess-phone').hide();
+					}
+
+					if (json.myProfileEmail) {
+						$('#hostess-email').show();
+					} else {
+						$('#hostess-email').hide();
+					}
+
 					show_view('invite');
 					// set_screen_title('Invitation');
 				} else {
