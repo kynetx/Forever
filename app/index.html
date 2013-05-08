@@ -46,7 +46,7 @@
             <span class="icon-bar"></span>
             <span class="icon-bar"></span>
           </button>
-          <a class="brand" href="/">Forever</a>
+          <a class="brand" href="/"><img src="img/forevrLogo.png" alt="Forever" style="margin-top: -12px; margin-bottom: -12px;"></a>
           <div class="nav-collapse collapse">
             <ul class="nav">
 							<li class="nav-item nav-auth" id="nav-friends" style="display:none;"><a href="/friends" data-toggle="collapse" data-target=".nav-collapse.in">Friends</a></li>
@@ -62,6 +62,9 @@
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Link</a>
                 <ul class="dropdown-menu">
                   <li><a class="oauth-sqtag-url" href="#" data-toggle="collapse" data-target=".nav-collapse.in">SquareTag</a></li>
+                  <li><a href="#" data-toggle="collapse" data-target=".nav-collapse.in">Neustar pCloud</a></li>
+									<li class="divider"></li>
+                  <li><a href="#" id="navAddLink" data-toggle="nav-collapse.in" data-target=".nav-collapse.in">Add Link</a></li>
                 </ul>
             </ul>
 
@@ -69,6 +72,23 @@
         </div>
       </div>
     </div>
+
+		<div id="modalAddLink" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+				<h3 id="myModalLabel">Link to Your Personal Cloud</h3>
+			</div>
+			<div class="modal-body">
+				<form class="form-inline" style="text-align:center;">
+					<label>Link URL</label>
+					<input type="text" class="input-large" placeholder="http://myhost.com/">
+				</form>
+			</div>
+			<div class="modal-footer">
+				<button class="btn" data-dismiss="modal" aria-hidden="true">Cancel</button>
+				<button class="btn btn-primary" data-dismiss="modal">Add Link</button>
+			</div>
+		</div>
 
     <div class="container-fluid">
 
@@ -78,13 +98,34 @@
         <div class="modal-body"><img src="img/spinner70.gif"></div>
       </div>
 
-      <!-- View: Test
+      <!-- View: About
       ============================================ -->
-      <div id="view-test" class="view row-fluid" style="display:none;">
+      <div id="view-about" class="view row-fluid" style="display:none;">
         <div class="span12" style="margin-bottom:12px;">
-					hello neo ...
+          <div class="hero-unit">
+            <h1 style="font-size:38.5px;margin-bottom:20px;">About Forever</h1>
+
+					<p>Forever is a demonstration application for personal
+					clouds. At present, Forever uses <a href="https://squaretag.com">SquareTag</a> as its personal
+					cloud. We hope to support other personal cloud providers in
+					the near future.</p>
+
+          <p>Forever stores no personal data whatsoever. Forever relies
+entirely on the personal cloud for storing data, knowing friend
+relationships, and sending notifications. Any data changes made in
+Forever are reflected in the linked personal cloud and no where
+else. As a result, Forever has no privacy policy of its own. The
+privacy policy of the personal cloud provider is what is relevant.</p>
+
+<p>For more information about Forever, see Phil Windley's white paper:</p>
+
+<ul>
+<h3style="font-size:18px;"><a href="http://www.windley.com/archives/2013/05/introducing_forever_and_personal_cloud_application_architectures.shtml">Introducing Forever and Personal Cloud Application Architectures</a></h3>
+</ul>
+
+					</div>
         </div>
-			</div>  <!-- #view-friends -->
+			</div>  <!-- #view-about -->
 
       <!-- View: Home
       ============================================ -->
@@ -95,7 +136,7 @@
 						<h3>Get Started by Linking Forever to your Personal Cloud</h3>
 						<a href="#" class="btn btn-primary oauth-sqtag-url">Click here to Link Squaretag</a></br>
 						<a href="#" class="btn disabled" style="margin-top: 12px;">Click here to Link Neustar pCloud</a>
-						<div style="text-align: right; margin-top: 80px;"><img src="img/kynetx_shield-128.png"></div>
+						<div style="text-align: right; margin-top: 80px;"><img src="img/forevrLogo128.png"></div>
           </div>
         </div>
 			</div>  <!-- #view-home -->
@@ -107,7 +148,7 @@
           <div class="hero-unit">
             <h1 style="font-size:38.5px;">Congratulations!</h1>
 						<h3>Forever is linked to your personal cloud</h3>
-						<div style="text-align: right; margin-top: 80px;"><img src="img/kynetx_shield-128.png"></div>
+						<div style="text-align: right; margin-top: 80px;"><img src="img/forevrLogo128.png"></div>
           </div>
         </div>
 			</div>  <!-- #view-home-auth -->
@@ -127,10 +168,14 @@
       ============================================ -->
       <div id="view-finder" class="view row-fluid" style="display:none;">
         <div class="span12">
+					<div id="alert-finder-success" class="alert alert-success" style="display:none;margin-left:0px;">
+						Your Forever Invitation has been sent</br>
+					</div>
 					<form class="form-finder form-inline">
 						<input type="text" name="inviteName" id="inviteName" placeholder="Name" required autofocus>
 						<input type="email" name="inviteEmail" id="inviteEmail" placeholder="Email" required>
 						<button type="submit" class="btn">Send Invitation</button>
+						<span class="help-block" style="display:none;">Update your profile name &amp; photo to send invitations.</span>
 					</form>
 
 					<h3>Open Invitations</h3>
@@ -155,7 +200,8 @@
 							<h4 class="media-heading" id="hostess-phone"></h4>
 						</div>
 					</div>
-					<button id="btn-invitation-accept" class="btn btn-primary btn-large btn-success btn-block" data-token="none" data-name="none">Accept</button>
+					<button id="btn-invitation-accept" class="btn btn-primary btn-large btn-success btn-block" data-token="none" data-name="none" style="display:none;">Accept</button>
+					<a href="#" id="link-invitation-accept" class="btn btn-primary btn-large btn-success btn-block" style="display:none;">Accept</a>
 					<button class="btn btn-primary btn-large btn-danger btn-block">Decline</button>
 				</div>
 			</div>  <!-- #view-invite -->
@@ -216,25 +262,31 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfileName">Name</label>
 							<div class="controls">
-								<input type="text" id="myProfileName" name="myProfileName">
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">Name</span>
+									<input  tabindex="1" class="" type="text" id="myProfileName" name="myProfileName" placeholder="(Required)" required="">
+								</div>
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfileEmail">Email</label>
 							<div class="controls">
-								<input type="text" id="myProfileEmail" name="myProfileEmail">
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">Mobile</span>
+									<input tabindex="2" type="tel" id="myProfilePhone" class="prependedInput" name="myProfilePhone" placeholder="phone">
+								</div>
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfilePhone">Phone</label>
 							<div class="controls">
-								<input type="text" id="myProfilePhone" name="myProfilePhone">
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">Personal</span>
+									<input tabindex="3" type="tel" id="myProfileEmail" class="prependedInput" name="myProfileEmail" placeholder="email">
+								</div>
 							</div>
 						</div>
+
 						<div class="control-group">
-							<label class="control-label" for="myProfilePhoto-preview">Photo</label>
 							<div class="controls">
 								<img id="myProfilePhoto-preview" class="mycloud-photo-preview" alt="" src="">
 							</div>
@@ -247,15 +299,13 @@
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfileDescription">Bio</label>
 							<div class="controls">
-								<textarea id="myProfileDescription" name="myProfileDescription"></textarea>
+								<textarea tabindex="4" rows="3" id="myProfileDescription" class="input-xlarge" name="myProfileDescription" placeholder="Describe yourself"></textarea>
 							</div>
 						</div>
 						<div class="control-group">
-							<label class="control-label" for="myProfileNotes">Notes</label>
 							<div class="controls">
-								<textarea id="myProfileNotes" name="myProfileNotes"></textarea>
+								<textarea tabindex="5" rows="3" id="myProfileNotes" class="input-xlarge" name="myProfileNotes" placeholder="Enter additional notes about yourself"></textarea>
 							</div>
 						</div>
 						<div class="control-group">
@@ -270,7 +320,7 @@
       <!-- View: Friend
       ============================================ -->
       <div id="view-friend" class="view row-fluid" style="display:none;">
-        <div class="span12">
+        <div class="span12"  style="margin-bottom:12px;">
 					<div class="media" style="margin-bottom:15px;">
 						<a class="pull-left" href="#">
 							<img class="media-object img-rounded" id="friend-photo" src="img/default.png" style="height:92px;">
@@ -281,40 +331,56 @@
 							<h4 class="media-heading" id="friend-phone"></h4>
 						</div>
 					</div>
-					<button class="btn btn-primary btn-large btn-block">Send Message</button>
+					<button class="btn btn-primary btn-large btn-block" id="btn-friend-message" data-token="">Send Message</button>
 					<a href="tel:" class="btn btn-primary btn-large btn-block" id="btn-friend-tel">Make Phone Call</a>
 					<a href="sms:" class="btn btn-primary btn-large btn-block" id="btn-friend-sms">Send Text Message</a>
 					<a href="mailto:" class="btn btn-primary btn-large btn-block" id="btn-friend-email">Send Email</a>
 				</div>
 			</div>  <!-- #view-login -->
 
-      <!-- View: Login
+      <!-- View: Message
       ============================================ -->
-      <div id="view-login" class="view row-fluid" style="display:none;">
-				<form class="form-login">
-					<h2 class="form-login-heading">Forever Login</h2>
-					<div id="alert-signin-success" class="alert alert-success" style="display:none;">
-						<strong>Successful</strong> login
-					</div>
-					<div id="alert-signin-fail" class="alert alert-error" style="display:none;">
-						<strong>Invalid</strong> email or password
-					</div>
-					<input type="text" id="authEmail" name="authEmail" class="input-block-level" placeholder="Email address">
-					<input type="password" id="authPass" name="authPass"  class="input-block-level" placeholder="Password">
-					<button class="btn btn-large btn-primary" type="submit">Sign in</button>
-				</form>
-			</div>  <!-- #view-login -->
-
-      <!-- View: Signup
-      ============================================ -->
-      <div id="view-signup" class="view row-fluid" style="display:none;">
-				<form class="form-signin">
-					<h2 class="form-signin-heading">Forever Signup</h2>
-					<input type="text" class="input-block-level" placeholder="Email address">
-					<input type="password" class="input-block-level" placeholder="Password">
-					<button class="btn btn-large btn-primary" type="submit">Sign Up</button>
-				</form>
-			</div>  <!-- #view-signup -->
+      <div id="view-message" class="view row-fluid" style="display:none;">
+        <div class="span12">
+ 					<form class="form-message form-horizontal">
+						<input type="hidden" name="messageToken" id="messageToken" value="">
+						<div class="control-group">
+							<label class="control-label"></label>
+							<div class="controls">
+								<div id="alert-message-success" class="alert alert-success span4" style="display:none;margin-left:0px;margin-bottom:0px;">
+									Your message has been sent.
+								</div>
+							</div>
+						</div>
+						<div class="control-group">
+							<div class="controls">
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">To</span>
+									<input type="text" id="messageName" name="messageName">
+								</div>
+							</div>
+						</div>
+						<div class="control-group">
+							<div class="controls">
+								<div class="input-prepend">
+									<span class="add-on" style="width:100px">Subject</span>
+									<input type="text" id="messageSubject" name="messageSubject">
+								</div>
+							</div>
+						</div>
+						<div class="control-group">
+							<div class="controls">
+								<textarea id="messageBody" class="input-xlarge" name="messageBody"></textarea>
+							</div>
+						</div>
+						<div class="control-group">
+							<div class="controls">
+								<button type="submit" class="btn">Send Message</button>
+							</div>
+						</div>
+					</form>			
+       </div>
+			</div>  <!-- #view-message -->
 
       <!-- View: Logout
       ============================================ -->
@@ -329,7 +395,10 @@
 			</div>  <!-- #view-404 -->
 
       <footer>
-        <p>&copy; Kynetx 2013</p>
+        <p>
+					<a href="/about" style="text-decoration:none;margin-right:6px;">About Forever</a>
+					&copy; Kynetx 2013
+				</p>
       </footer>
 
     </div> <!-- /.fluid-container -->

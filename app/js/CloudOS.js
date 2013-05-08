@@ -18,10 +18,18 @@
 		var esl = 'https://' + CloudOS.Host + '/sky/event/' +
 			CloudOS.Session_Token + '/' +  eid + '/' +
 			eventDomain + '/' + eventType +
-			'?' + eventParameters;
+			'?_rids=a169x727&' + eventParameters;
 
-		console.debug('CloudOS.Session_Token: ', CloudOS.Session_Token);
-		$.post(esl, eventAttributes, postFunction, "json")
+		console.debug('CloudOS_Session_Token: ', window.CloudOS.Session_Token);
+		$.ajax({
+				type: 'POST',
+				url: esl,
+				data: eventAttributes,
+				async: false,
+				dataType: 'json',
+				headers: {'Kobj-Session' : CloudOS_Session_Token},
+				success: postFunction,
+		})
 	};
 
 	// ------------------------------------------------------------------------
@@ -64,8 +72,11 @@
 	};
 
 	CloudOS.Update_MyProfile  = function(eventAttributes, postFunction) {
-		var eventParameters = "_rids=a169x727&element=profileUpdate.post";
-		CloudOS.Raise_Event('web', 'submit', eventAttributes, eventParameters, postFunction);
+		var eventParameters = "element=profileUpdate.post";
+		// var eventParameters = "_rids=a169x727&element=profileUpdate.post";
+		CloudOS_Raise_Event('web', 'submit', eventAttributes, eventParameters,
+			function(json) { postFunction(json) }
+		);
 	};
 
 	CloudOS.Get_Friend_Profile  = function(friendToken, getSuccess) {
@@ -118,6 +129,21 @@
 		CloudOS.Raise_Event('cloudos', 'api_send_email', eventAttributes, "", postFunction);
 	};
 
+			// ------------------------------------------------------------------------
+		function CloudOS_Send_Notification (application, subject, body, priority, token, postFunction) {
+		var eventAttributes = {
+			"application" : application,
+			"subject"     : subject,
+			"body"        : body,
+			"priority"    : priority,
+			"token"       : token
+		};
+		CloudOS_Raise_Event('cloudos', 'api_send_notification', eventAttributes, "",
+			function(json) { postFunction(json) }
+		)
+	}
+	window.CloudOS_Send_Notification = CloudOS_Send_Notification;
+
 	// ========================================================================
 	// Subscription Management
 
@@ -142,11 +168,11 @@
 	// OAuth functions
 
 	// ------------------------------------------------------------------------
-	CloudOS.Get_OAuth_URL = function() {
+	CloudOS.Get_OAuth_URL = function(fragment) {
 		var client_state = Math.floor(Math.random()*9999999);
 		var url = 'https://' + CloudOS.Host +
 			'/oauth/authorize?response_type=code' +
-			'&redirect_uri=' + encodeURIComponent(CloudOS.Callback_URL) +
+			'&redirect_uri=' + encodeURIComponent(CloudOS.Callback_URL + fragment) +
 			'&client_id=' + CloudOS.App_Key +
 			'&state=' + client_state;
 
@@ -163,15 +189,17 @@
 				"code"         : code
 		};
 
-		$.post(url,data,
-			function(json) {
-				console.dir(json);
-				CloudOS.Save_Session(json.OAUTH_ECI);
-				//$('li.nav-auth').show();
-				//$('li.nav-anon').hide();
-				//getMyProfile()
-			}, "json")
-	};
+		$.ajax({
+			type: 'POST',
+				url: url,
+				data: data,
+				async: false,
+				dataType: 'json',
+				success: function(json) {
+					CloudOS.Save_Session(json.OAUTH_ECI);
+				},
+			})
+	}
 
 	// ========================================================================
 	// Session Management
@@ -202,7 +230,7 @@
 
 	// ------------------------------------------------------------------------
 	CloudOS.Authenticated_Session  = function() {
-		return(CloudOS.Session_Token != "none")
+		return(CloudOS_Session_Token !== "none")
 	};
 
 	var SkyTokenName = '__SkySessionToken';
