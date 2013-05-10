@@ -178,6 +178,7 @@ $(document).ready(function() {
 	// --------------------------------------------
 	// View: friends
 	function view_friends() {
+		$('#modalSpinner').show();
 		show_view('friends');
 		getFriendsList();
 		// set_screen_title('Friends');
@@ -200,7 +201,7 @@ $(document).ready(function() {
 	// View: invitations
 	function view_invite(ctx) {
 		var token = ctx.params.token;
-		console.debug('Invite Token: ', token);
+		//console.debug('Invite Token: ', token);
 		getFriendProfile(token);
 		//show_view('invite');
 		currentView = 'invite';
@@ -219,10 +220,12 @@ $(document).ready(function() {
 	// View: friend
 	function view_friend(ctx) {
 		var token = ctx.params.token;
-		console.debug('Invite Token: ', token);
+		//console.debug('Invite Token: ', token);
+		$('#modalSpinner').show();
 		showFriendProfile(token);
 		show_view('friend');
 		// set_screen_title('Friend');
+		$('#modalSpinner').hide();
 		currentView = 'friend';
 	};
 
