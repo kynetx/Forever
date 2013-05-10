@@ -44,8 +44,6 @@ $(document).ready(function() {
 	var query = window.location.search.substring(1);
 	console.debug("QUERY: ", query);
 	if (query != "") {
-		var inviteToken = getQueryVariable('invite');
-		//var oauthCode = getQueryVariable('code');
 		if (query === "friends")
 			page("/friends")
 		else if (query.match(/login\&.+$/))
@@ -62,8 +60,9 @@ $(document).ready(function() {
 			page("/"+query)
 		else if (query.match(/message\/.+$/))
 			page("/"+query)
-		else if (inviteToken){
-			page('/invite/' + inviteToken);
+		else if (query.match(/invite\=.+$/)) {
+		  var inviteToken = getQueryVariable('invite')
+			page("/invite/"+inviteToken)
 		} else {
 			console.debug('Unrecognized query string: ', query);
 		}
@@ -551,7 +550,7 @@ $(document).ready(function() {
 					}
 			)
 			return false;
-															 
+
 	}
 
 	// --------------------------------------------
