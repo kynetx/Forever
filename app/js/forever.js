@@ -42,7 +42,7 @@ $(document).ready(function() {
 	// --------------------------------------------
 	// Check query parameters
 	var query = window.location.search.substring(1);
-	console.debug("QUERY: ", query);
+	// console.debug("QUERY: ", query);
 	if (query != "") {
 		if (query === "friends")
 			page("/friends")
@@ -64,7 +64,7 @@ $(document).ready(function() {
 		  var inviteToken = getQueryVariable('invite')
 			page("/invite/"+inviteToken)
 		} else {
-			console.debug('Unrecognized query string: ', query);
+			// console.debug('Unrecognized query string: ', query);
 		}
 	}
 
@@ -77,7 +77,7 @@ $(document).ready(function() {
           return decodeURIComponent(pair[1]);
         }
     }
-    console.log('Query variable %s not found', variable);
+    // console.log('Query variable %s not found', variable);
 	}
 
 	// --------------------------------------------
@@ -133,7 +133,7 @@ $(document).ready(function() {
 	// View: login
 	function view_login() {
 		var oauthCode = getQueryVariable('code');
-		console.debug("view_login");
+		// console.debug("view_login");
 
 		CloudOS_Get_OAuth_Access_Token(oauthCode);
 
@@ -152,9 +152,9 @@ $(document).ready(function() {
 	function view_signup() {
 		var oauthCode = getQueryVariable('code');
 		var token = getQueryVariable('token');
-		console.debug("view_signup");
-		console.debug("code: ", oauthCode);
-		console.debug("token: ", token);
+		// console.debug("view_signup");
+		// console.debug("code: ", oauthCode);
+		// console.debug("token: ", token);
 
 		CloudOS_Get_OAuth_Access_Token(oauthCode);
 
@@ -233,7 +233,7 @@ $(document).ready(function() {
 	// View: message
 	function view_message(ctx) {
 		var token = ctx.params.token;
-		console.debug('Friend Token: ', token);
+		// console.debug('Friend Token: ', token);
 		showFriendMessage(token);
 		show_view('message');
 		// set_screen_title('Message');
@@ -263,7 +263,7 @@ $(document).ready(function() {
 	function getMyProfile() {
 		$('#modalSpinner').show();
 		CloudOS_Get_MyProfile(function(json) {
-			console.dir(json);
+			// console.dir(json);
 			var myProfileNotes = json.myProfileNotes;
 			var myProfileDescription = json.myProfileDescription;
 
@@ -328,8 +328,8 @@ $(document).ready(function() {
 			var myName   = $('#myProfileName').val();
 			var myPhoto  = $('#myProfilePhoto').val();
 
-			console.debug("myName: ", myName);
-			console.debug("myPhoto: ", myPhoto);
+			// console.debug("myName: ", myName);
+			// console.debug("myPhoto: ", myPhoto);
 
 			if (myName === '' || myPhoto === 'https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png') {
 					$("form.form-finder span.help-block").show();
@@ -381,12 +381,12 @@ $(document).ready(function() {
 						"name"  : ename,
 						"email" : email
 				};
-				console.dir(eventAttributes);
-				console.dir(json);
+				// console.dir(eventAttributes);
+				// console.dir(json);
 
 				CloudOS_PDS_Add("foreverInvite", json.token, eventAttributes,
 				  function(json) {
-						console.dir(json);
+						// console.dir(json);
 						// Clear invitation form
 						$('#inviteName').val('');
 						$('#inviteEmail').val('');
@@ -417,7 +417,7 @@ $(document).ready(function() {
 
 		CloudOS_Send_Email(name, email, subject, body,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 				$('#alert-finder-success').show('fast').delay(7000).hide('fast')
 			})
 	}
@@ -429,7 +429,7 @@ $(document).ready(function() {
 			var token = $(this).attr('data-token');
 			var name = $(this).attr('data-name');
 			var email = $(this).attr('data-email');
-			console.debug("resend token: ", token);
+			// console.debug("resend token: ", token);
 
 			sendForeverInvitation(name, email, token)
 		}
@@ -440,7 +440,7 @@ $(document).ready(function() {
 	$('#table-finder').on('click','button.btn-finder-action-revoke',
 		function(event){
 			var token = $(this).attr('data-token');
-			console.debug("revoke token: ", token);
+			// console.debug("revoke token: ", token);
 
 			// Remove row from GUI
 			$(this).parent().parent().remove();
@@ -467,7 +467,7 @@ $(document).ready(function() {
 	function getFriendProfile(token) {
 		CloudOS_Get_Friend_Profile(token,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 				if (json.status) {
 					var iname = json.myProfileName;
 					var OAuth_URL = CloudOS_Get_OAuth_URL("signup/"+token);
@@ -522,7 +522,7 @@ $(document).ready(function() {
 	function acceptInvitation(token) {
 		CloudOS_Get_Friend_Profile(token,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 					$('#btn-invitation-accept').attr('data-token', token);
 					$('#btn-invitation-accept').attr('data-name', json.myProfileName);
 					$('#btn-invitation-accept').attr('data-photo', json.myProfilePhoto);
@@ -545,7 +545,7 @@ $(document).ready(function() {
 							CloudOS_Subscribe("Forever", "Forever Friend", "friend-friend",
 																ourToken, JSON.stringify(attrs),
 																function(json) {
-																		console.dir(json);
+																		// console.dir(json);
 																		setTimeout('page(\'/friends\')', 2000);
 																		// page("/friends");
 																}
@@ -578,7 +578,7 @@ $(document).ready(function() {
 					CloudOS_Subscribe("Forever", "Forever Friend", "friend-friend",
 														ourToken, JSON.stringify(attrs),
 						function(json) {
-							console.dir(json);
+							// console.dir(json);
 							setTimeout('page(\'/friends\')', 2000);
 							// page("/friends");
 						}
@@ -595,11 +595,11 @@ $(document).ready(function() {
 	function getFriendsList() {
 		CloudOS_Subscription_List("namespace=Forever&relationship=friend",
 			function(json) {
-			  console.dir(json);
+			  // console.dir(json);
 				$('#table-friends').html('');
 				jQuery.each(json, function() {
 					var subAttrs = jQuery.parseJSON(this.subAttrs);
-					console.dir(subAttrs);
+					// console.dir(subAttrs);
 					if (typeof subAttrs.tokens != "undefined") {
 							var unames = subAttrs.names.split(':');
 							var tokens = subAttrs.tokens.split(':');
@@ -639,7 +639,7 @@ $(document).ready(function() {
 	$('#btn-friend-message').on('click',
 		function(event){
 			var token = $(this).attr('data-token');
-			console.debug("send message token: ", token);
+			// console.debug("send message token: ", token);
 			page('/message/'+token)
 
 			return false;
@@ -660,7 +660,7 @@ $(document).ready(function() {
 
 		CloudOS_Get_Friend_Profile(token,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 				if (json.status) {
 
 					$('#friend-photo').attr('src', json.myProfilePhoto);
@@ -716,7 +716,7 @@ $(document).ready(function() {
 
 		CloudOS_Get_Friend_Profile(token,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 				if (json.status) {
 
 					$('#messageToken').val(token);
