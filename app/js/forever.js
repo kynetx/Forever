@@ -2,7 +2,7 @@ $(document).ready(function() {
 
 	// --------------------------------------------
 	// Build OAuth URL and update links on homepage
-	var OAuth_Sqtag_URL = CloudOS.Get_OAuth_URL("login");
+	var OAuth_Sqtag_URL = CloudOS.getOAuthURL("login");
 	$('a.oauth-sqtag-url').attr('href', OAuth_Sqtag_URL);
 
 	// --------------------------------------------
@@ -29,9 +29,9 @@ $(document).ready(function() {
 
 	// --------------------------------------------
 	// Check authentication
-	CloudOS.Retrieve_Session();
+	CloudOS.retrieveSession();
 
-	if (CloudOS.Authenticated_Session()) {
+	if (CloudOS.authenticatedSession()) {
 		Navbar_Show_Auth()
 		show_view('home-auth')
 	} else {
@@ -42,10 +42,8 @@ $(document).ready(function() {
 	// --------------------------------------------
 	// Check query parameters
 	var query = window.location.search.substring(1);
-	console.debug("QUERY: ", query);
+	// console.debug("QUERY: ", query);
 	if (query != "") {
-		var inviteToken = getQueryVariable('invite');
-		//var oauthCode = getQueryVariable('code');
 		if (query === "friends")
 			page("/friends")
 		else if (query.match(/login\&.+$/))
@@ -62,21 +60,11 @@ $(document).ready(function() {
 			page("/"+query)
 		else if (query.match(/message\/.+$/))
 			page("/"+query)
-		else if (inviteToken){
-			page('/invite/' + inviteToken);
-		} else if (oauthCode) {
-			CloudOS.Get.OAuth_Access_Token(oauthCode);
-
-			if (CloudOS.Authenticated_Session()) {
-				Navbar_Show_Auth()
-				show_view('home-auth')
-				getMyProfile()
-			} else {
-				Navbar_Show_Anon()
-				show_view('home');
-			}
+		else if (query.match(/invite\=.+$/)) {
+		  var inviteToken = getQueryVariable('invite')
+			page("/invite/"+inviteToken)
 		} else {
-			console.debug('Unrecognized query string: ', query);
+			// console.debug('Unrecognized query string: ', query);
 		}
 	}
 
@@ -89,7 +77,7 @@ $(document).ready(function() {
           return decodeURIComponent(pair[1]);
         }
     }
-    console.log('Query variable %s not found', variable);
+    // console.log('Query variable %s not found', variable);
 	}
 
 	// --------------------------------------------
@@ -132,7 +120,7 @@ $(document).ready(function() {
 	// --------------------------------------------
 	// View: home
 	function view_home() {
-		if (CloudOS.Authenticated_Session()) {
+		if (CloudOS.authenticatedSession()) {
 			show_view('home-auth')
 		} else {
 			show_view('home');
@@ -145,11 +133,11 @@ $(document).ready(function() {
 	// View: login
 	function view_login() {
 		var oauthCode = getQueryVariable('code');
-		console.debug("view_login");
+		// console.debug("view_login");
 
-		CloudOS_Get_OAuth_Access_Token(oauthCode);
+		CloudOS.getOAuthAccessToken(oauthCode);
 
-		if (CloudOS_Authenticated_Session()) {
+		if (CloudOS.authenticatedSession()) {
 				Navbar_Show_Auth()
 				show_view('home-auth')
 				$('#modalSpinner').hide();
@@ -164,13 +152,13 @@ $(document).ready(function() {
 	function view_signup() {
 		var oauthCode = getQueryVariable('code');
 		var token = getQueryVariable('token');
-		console.debug("view_signup");
-		console.debug("code: ", oauthCode);
-		console.debug("token: ", token);
+		// console.debug("view_signup");
+		// console.debug("code: ", oauthCode);
+		// console.debug("token: ", token);
 
-		CloudOS_Get_OAuth_Access_Token(oauthCode);
+		CloudOS.getOAuthAccessToken(oauthCode);
 
-		if (CloudOS_Authenticated_Session()) {
+		if (CloudOS.authenticatedSession()) {
 				Navbar_Show_Auth();
 				acceptInvitation(token);
 		} else {
@@ -190,6 +178,7 @@ $(document).ready(function() {
 	// --------------------------------------------
 	// View: friends
 	function view_friends() {
+		$('#modalSpinner').show();
 		show_view('friends');
 		getFriendsList();
 		// set_screen_title('Friends');
@@ -212,7 +201,7 @@ $(document).ready(function() {
 	// View: invitations
 	function view_invite(ctx) {
 		var token = ctx.params.token;
-		console.debug('Invite Token: ', token);
+		//console.debug('Invite Token: ', token);
 		getFriendProfile(token);
 		//show_view('invite');
 		currentView = 'invite';
@@ -231,10 +220,12 @@ $(document).ready(function() {
 	// View: friend
 	function view_friend(ctx) {
 		var token = ctx.params.token;
-		console.debug('Invite Token: ', token);
+		//console.debug('Invite Token: ', token);
+		$('#modalSpinner').show();
 		showFriendProfile(token);
 		show_view('friend');
 		// set_screen_title('Friend');
+		$('#modalSpinner').hide();
 		currentView = 'friend';
 	};
 
@@ -242,7 +233,7 @@ $(document).ready(function() {
 	// View: message
 	function view_message(ctx) {
 		var token = ctx.params.token;
-		console.debug('Friend Token: ', token);
+		// console.debug('Friend Token: ', token);
 		showFriendMessage(token);
 		show_view('message');
 		// set_screen_title('Message');
@@ -252,7 +243,7 @@ $(document).ready(function() {
 	// --------------------------------------------
 	// View: logout
 	function view_logout() {
-		CloudOS.Remove_Session();
+		CloudOS.removeSession();
 		Navbar_Show_Anon();
 		page('/');
 	};
@@ -271,8 +262,7 @@ $(document).ready(function() {
 	// --------------------------------------------
 	function getMyProfile() {
 		$('#modalSpinner').show();
-		CloudOS.Get_MyProfile(function(json) {
-			console.dir(json);
+		CloudOS.getMyProfile(function(json) {
 			var myProfileNotes = json.myProfileNotes;
 			var myProfileDescription = json.myProfileDescription;
 
@@ -320,7 +310,7 @@ $(document).ready(function() {
 
 		event.preventDefault();
 		$('#modalSpinner').show();
-		CloudOS.Update_MyProfile(eventAttributes,
+		CloudOS.updateMyProfile(eventAttributes,
 			function(json) {
 				$('#modalSpinner').hide();
 				$('#alert-profile-success').show('fast').delay(7000).hide('fast')
@@ -337,8 +327,8 @@ $(document).ready(function() {
 			var myName   = $('#myProfileName').val();
 			var myPhoto  = $('#myProfilePhoto').val();
 
-			console.debug("myName: ", myName);
-			console.debug("myPhoto: ", myPhoto);
+			// console.debug("myName: ", myName);
+			// console.debug("myPhoto: ", myPhoto);
 
 			if (myName === '' || myPhoto === 'https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png') {
 					$("form.form-finder span.help-block").show();
@@ -355,7 +345,7 @@ $(document).ready(function() {
 	// GET list of Forever Invitations
 
 	function getForeverInvitations() {
-		CloudOS.PDS_List("foreverInvite",
+		CloudOS.PDSList("foreverInvite",
 		  function(json) {
 				// console.dir(json);
 				$('#table-finder').html('');
@@ -381,7 +371,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		$('#modalSpinner').show();
 
-		CloudOS.Create_Channel(
+		CloudOS.createChannel(
 			function(json) {
 				var ename = $('#inviteName').val();
 				var email = $('#inviteEmail').val();
@@ -390,12 +380,12 @@ $(document).ready(function() {
 						"name"  : ename,
 						"email" : email
 				};
-				console.dir(eventAttributes);
-				console.dir(json);
+				// console.dir(eventAttributes);
+				// console.dir(json);
 
-				CloudOS.PDS_Add("foreverInvite", json.token, eventAttributes,
+				CloudOS.PDSAdd("foreverInvite", json.token, eventAttributes,
 				  function(json) {
-						console.dir(json);
+						// console.dir(json);
 						// Clear invitation form
 						$('#inviteName').val('');
 						$('#inviteEmail').val('');
@@ -424,9 +414,9 @@ $(document).ready(function() {
 		var body = myName + " has invited you to Forever, an evergreen addressbook based on Personal Clouds. Follow the link below to accept the invitation.\n\n" +
 							"http://forevr.us/?invite=" + token;
 
-		CloudOS_Send_Email(name, email, subject, body,
+		CloudOS.sendEmail(name, email, subject, body,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 				$('#alert-finder-success').show('fast').delay(7000).hide('fast')
 			})
 	}
@@ -438,7 +428,7 @@ $(document).ready(function() {
 			var token = $(this).attr('data-token');
 			var name = $(this).attr('data-name');
 			var email = $(this).attr('data-email');
-			console.debug("resend token: ", token);
+			// console.debug("resend token: ", token);
 
 			sendForeverInvitation(name, email, token)
 		}
@@ -449,18 +439,18 @@ $(document).ready(function() {
 	$('#table-finder').on('click','button.btn-finder-action-revoke',
 		function(event){
 			var token = $(this).attr('data-token');
-			console.debug("revoke token: ", token);
+			// console.debug("revoke token: ", token);
 
 			// Remove row from GUI
 			$(this).parent().parent().remove();
 
-			CloudOS.PDS_Delete("foreverInvite", token,
+			CloudOS.PDSDelete("foreverInvite", token,
 				  function(json) {
 						console.dir(json);
 					}
 			);
 
-			CloudOS.Destroy_Channel(token,
+			CloudOS.destroyChannel(token,
 				  function(json) {
 						console.dir(json);
 					}
@@ -474,14 +464,14 @@ $(document).ready(function() {
 	// Invitation Management
 
 	function getFriendProfile(token) {
-		CloudOS.Get_Friend_Profile(token,
+		CloudOS.getFriendProfile(token,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 				if (json.status) {
 					var iname = json.myProfileName;
-					var OAuth_URL = CloudOS_Get_OAuth_URL("signup/"+token);
+					var OAuth_URL = CloudOS.getOAuthURL("signup/"+token);
 
-					if (CloudOS_Authenticated_Session()) {
+					if (CloudOS.authenticatedSession()) {
 							$('#btn-invitation-accept').show();
 							$('#link-invitation-accept').hide();
 					} else {
@@ -529,16 +519,16 @@ $(document).ready(function() {
 
 	// --------------------------------------------
 	function acceptInvitation(token) {
-		CloudOS_Get_Friend_Profile(token,
+		CloudOS.getFriendProfile(token,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 					$('#btn-invitation-accept').attr('data-token', token);
 					$('#btn-invitation-accept').attr('data-name', json.myProfileName);
 					$('#btn-invitation-accept').attr('data-photo', json.myProfilePhoto);
 			});
 
-			CloudOS_Create_Channel(
-					function(json) {
+			CloudOS.createChannel(
+        function(json) {
 							var ourName  = $('#btn-invitation-accept').attr('data-name');
 							var ourToken = $('#btn-invitation-accept').attr('data-token');
 							var ourPhoto = $('#btn-invitation-accept').attr('data-photo');
@@ -551,18 +541,16 @@ $(document).ready(function() {
 									"photos" : myPhoto+";"+ourPhoto,
 									"pdsKey" : ourToken
 							};
-							CloudOS_Subscribe("Forever", "Forever Friend", "friend-friend",
-																ourToken, JSON.stringify(attrs),
-																function(json) {
-																		console.dir(json);
-																		setTimeout('page(\'/friends\')', 2000);
-																		// page("/friends");
-																}
-															 );
+							CloudOS.subscribe("Forever", "Forever Friend", "friend-friend",
+                ourToken, JSON.stringify(attrs),
+                function(json) {
+                  setTimeout('page(\'/friends\')', 2000);
+                }
+             );
 					}
 			)
 			return false;
-															 
+
 	}
 
 	// --------------------------------------------
@@ -570,7 +558,7 @@ $(document).ready(function() {
 	$('#btn-invitation-accept').on('click',
 		function(event){
 			$('#modalSpinner').show();
-			CloudOS.Create_Channel(
+			CloudOS.createChannel(
 				function(json) {
 					var ourName  = $('#btn-invitation-accept').attr('data-name');
 					var ourToken = $('#btn-invitation-accept').attr('data-token');
@@ -584,10 +572,10 @@ $(document).ready(function() {
 							"photos" : myPhoto+";"+ourPhoto,
 							"pdsKey" : ourToken
 					};
-					CloudOS.Subscribe("Forever", "Forever Friend", "friend-friend",
+					CloudOS.subscribe("Forever", "Forever Friend", "friend-friend",
 														ourToken, JSON.stringify(attrs),
 						function(json) {
-							console.dir(json);
+							// console.dir(json);
 							setTimeout('page(\'/friends\')', 2000);
 							// page("/friends");
 						}
@@ -602,13 +590,13 @@ $(document).ready(function() {
 	// Friends Management
 
 	function getFriendsList() {
-		CloudOS.Subscription_List("namespace=Forever&relationship=friend", 
+		CloudOS.subscriptionList("namespace=Forever&relationship=friend", 
 			function(json) {
-			  console.dir(json);
+			  // console.dir(json);
 				$('#table-friends').html('');
 				jQuery.each(json, function() {
 					var subAttrs = jQuery.parseJSON(this.subAttrs);
-					console.dir(subAttrs);
+					// console.dir(subAttrs);
 					if (typeof subAttrs.tokens != "undefined") {
 							var unames = subAttrs.names.split(':');
 							var tokens = subAttrs.tokens.split(':');
@@ -648,7 +636,7 @@ $(document).ready(function() {
 	$('#btn-friend-message').on('click',
 		function(event){
 			var token = $(this).attr('data-token');
-			console.debug("send message token: ", token);
+			// console.debug("send message token: ", token);
 			page('/message/'+token)
 
 			return false;
@@ -667,9 +655,9 @@ $(document).ready(function() {
 		$('#btn-friend-sms').attr('href', 'sms:');
 		$('#btn-friend-email').attr('href', 'mailto:');
 
-		CloudOS.Get_Friend_Profile(token,
+		CloudOS.getFriendProfile(token,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 				if (json.status) {
 
 					$('#friend-photo').attr('src', json.myProfilePhoto);
@@ -723,9 +711,9 @@ $(document).ready(function() {
 		$('#messageSubject').val('');
 		$('#messageBody').val('');
 
-		CloudOS_Get_Friend_Profile(token,
+		CloudOS.getFriendProfile(token,
 			function(json) {
-				console.dir(json);
+				// console.dir(json);
 				if (json.status) {
 
 					$('#messageToken').val(token);
@@ -754,7 +742,7 @@ $(document).ready(function() {
 		event.preventDefault();
 		$('#modalSpinner').show();
 
-		CloudOS_Send_Notification("Forever", theSubject, body, 2, token,
+		CloudOS.sendNotification("Forever", theSubject, body, 2, token,
 			function(json) {
 				$('#modalSpinner').hide();
 				$('#alert-message-success').show('fast').delay(7000).hide('fast')
