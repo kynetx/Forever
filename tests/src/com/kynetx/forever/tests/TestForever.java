@@ -4,15 +4,14 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
-import org.junit.After;
 import org.junit.AfterClass;
-import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.firefox.FirefoxDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -28,7 +27,7 @@ public class TestForever {
 	@BeforeClass
 	public static void setUp() throws Exception {
 		System.setProperty("webdriver.chrome.driver", "/home/jessie/libs/bin/chromedriver");
-		driver = new FirefoxDriver();
+		driver = new ChromeDriver();
 		wait = new WebDriverWait(driver, timeout);
 		//driver.manage().timeouts().implicitlyWait(30, TimeUnit.SECONDS);
 	}
@@ -147,6 +146,26 @@ public class TestForever {
 		wait.until(ExpectedConditions.visibilityOfElementLocated(profileName));
 		
 		assertEquals("Bob Smith", driver.findElement(profileName).getAttribute("value"));
+	}
+	
+	@Test
+	public void testExistingFriends() throws Exception {
+		// Open up the menu...
+		driver.findElement(By.cssSelector("div.navbar-inner .container-fluid button.btn")).click();
+		driver.findElement(By.linkText("Friends")).click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#table-friends")));
+		
+		WebElement firstFriend = driver.findElement(By.cssSelector("#table-friends>tr:nth-of-type(1)>td"));
+		assertEquals("Steve Fulling", firstFriend.getText());
+		
+		firstFriend.click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("friend-name")));
+		
+		assertEquals("Steve Fulling", driver.findElement(By.id("friend-name")).getText());
+		assertEquals("swf@kynetx.com", driver.findElement(By.id("friend-email")).getText());
+		assertEquals("8016023200", driver.findElement(By.id("friend-phone")).getText());
 	}
 
 	@AfterClass
