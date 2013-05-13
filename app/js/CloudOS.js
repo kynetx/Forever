@@ -23,7 +23,7 @@
 			eventDomain + '/' + eventType +
 			'?_rids=a169x727&' + eventParameters;
 
-		console.debug('CloudOS_Session_Token: ', window.CloudOS_Session_Token);
+		// console.debug('CloudOS_Session_Token: ', window.CloudOS_Session_Token);
 		// $.post(esl, eventAttributes, function(json) {postFunction(json)}, "json")
 		$.ajax({
 				type: 'POST',
@@ -246,7 +246,7 @@
 
 		if (SessionCookie != "undefined") {
 			CloudOS_Session_Token = SessionCookie;
-			console.debug('CloudOS_Session_Token: ', CloudOS_Session_Token);
+			// console.debug('CloudOS_Session_Token: ', CloudOS_Session_Token);
 		} else {
 			CloudOS_Session_Token = "none";
 		}
