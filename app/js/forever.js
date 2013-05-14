@@ -150,16 +150,16 @@ $(document).ready(function() {
 		var oauthCode = getQueryVariable('code');
 		// console.debug("view_login");
 
-		CloudOS.getOAuthAccessToken(oauthCode);
-
-		if (CloudOS.authenticatedSession()) {
-				Navbar_Show_Auth()
-				show_view('home-auth')
-				$('#modalSpinner').hide();
-		} else {
-				Navbar_Show_Anon()
-				show_view('home');
-		}
+		CloudOS.getOAuthAccessToken(oauthCode, function(){
+      if (CloudOS.authenticatedSession()) {
+          Navbar_Show_Auth()
+          show_view('home-auth')
+          $('#modalSpinner').hide();
+      } else {
+          Navbar_Show_Anon()
+          show_view('home');
+      }
+    });
 	};
 
 	// --------------------------------------------
@@ -171,15 +171,15 @@ $(document).ready(function() {
 		// console.debug("code: ", oauthCode);
 		// console.debug("token: ", token);
 
-		CloudOS.getOAuthAccessToken(oauthCode);
-
-		if (CloudOS.authenticatedSession()) {
-				Navbar_Show_Auth();
-				acceptInvitation(token);
-		} else {
-				Navbar_Show_Anon()
-				show_view('home');
-		}
+		CloudOS.getOAuthAccessToken(oauthCode, function(){
+      if (CloudOS.authenticatedSession()) {
+          Navbar_Show_Auth();
+          acceptInvitation(token);
+      } else {
+          Navbar_Show_Anon()
+          show_view('home');
+      }
+    });
 	};
 
 	// --------------------------------------------
@@ -512,36 +512,35 @@ $(document).ready(function() {
 	function acceptInvitation(token) {
 		CloudOS.getFriendProfile(token,
 			function(json) {
-				// console.dir(json);
 					$('#btn-invitation-accept').attr('data-token', token);
 					$('#btn-invitation-accept').attr('data-name', json.myProfileName);
 					$('#btn-invitation-accept').attr('data-photo', json.myProfilePhoto);
+
+        CloudOS.createChannel(
+          function(json) {
+                var ourName  = $('#btn-invitation-accept').attr('data-name');
+                var ourToken = $('#btn-invitation-accept').attr('data-token');
+                var ourPhoto = $('#btn-invitation-accept').attr('data-photo');
+                var myName   = $('#myProfileName').val();
+                var myPhoto  = $('#myProfilePhoto').val();
+                var myToken  = json.token;
+                var attrs  = {
+                    "names"  : myName+":"+ourName,
+                    "tokens" : myToken+":"+ourToken,
+                    "photos" : myPhoto+";"+ourPhoto,
+                    "pdsKey" : ourToken
+                };
+                CloudOS.subscribe("Forever", "Forever Friend", "friend-friend",
+                  ourToken, JSON.stringify(attrs),
+                  function(json) {
+                    setTimeout('page(\'/friends\')', 2000);
+                  }
+               );
+            }
+        );
 			});
 
-			CloudOS.createChannel(
-        function(json) {
-							var ourName  = $('#btn-invitation-accept').attr('data-name');
-							var ourToken = $('#btn-invitation-accept').attr('data-token');
-							var ourPhoto = $('#btn-invitation-accept').attr('data-photo');
-							var myName   = $('#myProfileName').val();
-							var myPhoto  = $('#myProfilePhoto').val();
-							var myToken  = json.token;
-							var attrs  = {
-									"names"  : myName+":"+ourName,
-									"tokens" : myToken+":"+ourToken,
-									"photos" : myPhoto+";"+ourPhoto,
-									"pdsKey" : ourToken
-							};
-							CloudOS.subscribe("Forever", "Forever Friend", "friend-friend",
-                ourToken, JSON.stringify(attrs),
-                function(json) {
-                  setTimeout('page(\'/friends\')', 2000);
-                }
-             );
-					}
-			)
 			return false;
-
 	}
 
 	// --------------------------------------------
@@ -566,13 +565,13 @@ $(document).ready(function() {
 					CloudOS.subscribe("Forever", "Forever Friend", "friend-friend",
 														ourToken, JSON.stringify(attrs),
 						function(json) {
-							// console.dir(json);
-							setTimeout('page(\'/friends\')', 2000);
-							// page("/friends");
+							setTimeout(function(){
+                page('/friends');
+              }, 3000);
 						}
 					);
 				}
-			)
+			);
 			return false;
 		}
 	)

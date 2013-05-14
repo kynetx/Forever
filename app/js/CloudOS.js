@@ -171,7 +171,7 @@
 	};
 
 	// ------------------------------------------------------------------------
-	CloudOS.getOAuthAccessToken  = function(code) {
+	CloudOS.getOAuthAccessToken  = function(code, callback) {
 		var url = 'https://' + CloudOS.host +	'/oauth/access_token';
 		var data = {
 				"grant_type"   : "authorization_code",
@@ -187,6 +187,7 @@
 				dataType: 'json',
 				success: function(json) {
 					CloudOS.saveSession(json.OAUTH_ECI);
+          callback(json);
 				},
 			})
 	}
