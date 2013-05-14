@@ -232,8 +232,8 @@ $(document).ready(function() {
 			$('#myProfilePhoto').val(json.myProfilePhoto);
 			$('#myProfilePhoto-preview').attr('src', json.myProfilePhoto);
 
-		show_view('profile');
-		currentView = 'profile';
+      show_view('profile');
+      currentView = 'profile';
 			$('#modalSpinner').hide();
 		});
 	};
