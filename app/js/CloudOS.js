@@ -24,7 +24,6 @@
 				type: 'POST',
 				url: esl,
 				data: eventAttributes,
-				async: false,
 				dataType: 'json',
 				headers: {'Kobj-Session' : CloudOS.sessionToken},
 				success: postFunction,
@@ -41,7 +40,6 @@
 		$.ajax({
 				type: 'GET',
 				url: esl,
-				async: false,
 				dataType: 'json',
 				headers: {'Kobj-Session' : CloudOS.sessionToken},
 				success: getSuccess,
@@ -186,7 +184,6 @@
 			type: 'POST',
 				url: url,
 				data: data,
-				async: false,
 				dataType: 'json',
 				success: function(json) {
 					CloudOS.saveSession(json.OAUTH_ECI);

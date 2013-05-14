@@ -88,7 +88,22 @@ $(document).ready(function() {
 	function Navbar_Show_Auth() {
 		$('li.nav-auth').show();
 		$('li.nav-anon').hide();
-		getMyProfile()
+		CloudOS.getMyProfile(function(json) {
+			var myProfileNotes = json.myProfileNotes;
+			var myProfileDescription = json.myProfileDescription;
+
+			if (myProfileNotes === 'null') {myProfileNotes = ''}
+			if (myProfileDescription === 'null') {myProfileDescription = ''}
+
+			$('#modalSpinner').hide();
+			$('#myProfileName').val(json.myProfileName);
+			$('#myProfileEmail').val(json.myProfileEmail);
+			$('#myProfilePhone').val(json.myProfilePhone);
+			$('#myProfileDescription').text(myProfileDescription);
+			$('#myProfileNotes').text(myProfileNotes);
+			$('#myProfilePhoto').val(json.myProfilePhoto);
+			$('#myProfilePhoto-preview').attr('src', json.myProfilePhoto);
+		});
 	}
 
 	// --------------------------------------------
@@ -179,11 +194,7 @@ $(document).ready(function() {
 	// View: friends
 	function view_friends() {
 		$('#modalSpinner').show();
-		show_view('friends');
 		getFriendsList();
-		// set_screen_title('Friends');
-		$('#modalSpinner').hide();
-		currentView = 'friends';
 	};
 
 	// --------------------------------------------
@@ -192,52 +203,54 @@ $(document).ready(function() {
 		$('#modalSpinner').show();
 		initInvitationForm();
 		getForeverInvitations();
-		show_view('finder');
-		// set_screen_title('Finder');
-		currentView = 'finder';
 	};
 
 	// --------------------------------------------
 	// View: invitations
 	function view_invite(ctx) {
 		var token = ctx.params.token;
-		//console.debug('Invite Token: ', token);
 		getFriendProfile(token);
-		//show_view('invite');
-		currentView = 'invite';
 	};
 
 	// --------------------------------------------
 	// View: profile
 	function view_profile() {
+		$('#modalSpinner').show();
+
+		CloudOS.getMyProfile(function(json) {
+			var myProfileNotes = json.myProfileNotes;
+			var myProfileDescription = json.myProfileDescription;
+
+			if (myProfileNotes === 'null') {myProfileNotes = ''}
+			if (myProfileDescription === 'null') {myProfileDescription = ''}
+
+			$('#myProfileName').val(json.myProfileName);
+			$('#myProfileEmail').val(json.myProfileEmail);
+			$('#myProfilePhone').val(json.myProfilePhone);
+			$('#myProfileDescription').text(myProfileDescription);
+			$('#myProfileNotes').text(myProfileNotes);
+			$('#myProfilePhoto').val(json.myProfilePhoto);
+			$('#myProfilePhoto-preview').attr('src', json.myProfilePhoto);
+
 		show_view('profile');
-		getMyProfile();
-		// set_screen_title('Profile');
 		currentView = 'profile';
+			$('#modalSpinner').hide();
+		});
 	};
 
 	// --------------------------------------------
 	// View: friend
 	function view_friend(ctx) {
 		var token = ctx.params.token;
-		//console.debug('Invite Token: ', token);
 		$('#modalSpinner').show();
 		showFriendProfile(token);
-		show_view('friend');
-		// set_screen_title('Friend');
-		$('#modalSpinner').hide();
-		currentView = 'friend';
 	};
 
 	// --------------------------------------------
 	// View: message
 	function view_message(ctx) {
 		var token = ctx.params.token;
-		// console.debug('Friend Token: ', token);
 		showFriendMessage(token);
-		show_view('message');
-		// set_screen_title('Message');
-		currentView = 'message';
 	};
 
 	// --------------------------------------------
@@ -252,34 +265,11 @@ $(document).ready(function() {
 	// View: 404
 	function view_notfound() {
 		show_view('404');
-		// set_screen_title('404');
 		currentView = '404';
 	};
 
 	// ========================================================================
 	// myProfile Management
-
-	// --------------------------------------------
-	function getMyProfile() {
-		$('#modalSpinner').show();
-		CloudOS.getMyProfile(function(json) {
-			var myProfileNotes = json.myProfileNotes;
-			var myProfileDescription = json.myProfileDescription;
-
-			if (myProfileNotes === 'null') {myProfileNotes = ''}
-			if (myProfileDescription === 'null') {myProfileDescription = ''}
-
-			$('#modalSpinner').hide();
-			$('#myProfileName').val(json.myProfileName);
-			$('#myProfileEmail').val(json.myProfileEmail);
-			$('#myProfilePhone').val(json.myProfilePhone);
-			$('#myProfileDescription').text(myProfileDescription);
-			$('#myProfileNotes').text(myProfileNotes);
-			$('#myProfilePhoto').val(json.myProfilePhoto);
-			$('#myProfilePhoto-preview').attr('src', json.myProfilePhoto);
-		});
-	}
-	window.getMyProfile = getMyProfile;
 
 	// --------------------------------------------
 	function updatePhotoPreview(input) {
@@ -361,6 +351,8 @@ $(document).ready(function() {
 						$('#table-finder').prepend(newRow);
 					})
 				}
+        show_view('finder');
+        currentView = 'finder';
 				$('#modalSpinner').hide();
 			}
 		);
@@ -466,7 +458,6 @@ $(document).ready(function() {
 	function getFriendProfile(token) {
 		CloudOS.getFriendProfile(token,
 			function(json) {
-				// console.dir(json);
 				if (json.status) {
 					var iname = json.myProfileName;
 					var OAuth_URL = CloudOS.getOAuthURL("signup/"+token);
@@ -507,10 +498,10 @@ $(document).ready(function() {
 					}
 
 					show_view('invite');
-					// set_screen_title('Invitation');
+          currentView = 'invite';
 				} else {
 					show_view('invite-expired');
-					// set_screen_title('Invitation');
+          currentView = 'invite-expired';
 				}
 				$('#modalSpinner').hide();
 			}
@@ -613,7 +604,10 @@ $(document).ready(function() {
 									'</td></tr>';
 							$('#table-friends').prepend(newRow);
 					}
-				})
+				});
+        show_view('friends');
+        $('#modalSpinner').hide();
+        currentView = 'friends';
 			}
 		);
 	}
@@ -698,8 +692,12 @@ $(document).ready(function() {
 						$('#btn-friend-email').hide();
 						$('#btn-friend-message').hide();
 				}
+
+        show_view('friend');
+        $('#modalSpinner').hide();
+        currentView = 'friend';
 			}
-		)
+		);
 	}
 
 	// --------------------------------------------
@@ -715,14 +713,15 @@ $(document).ready(function() {
 			function(json) {
 				// console.dir(json);
 				if (json.status) {
-
 					$('#messageToken').val(token);
 					$('#messageName').val(json.myProfileName);
 
+          show_view('message');
+          currentView = 'message';
 					$('#modalSpinner').hide();
 				}
 			}
-		)
+		);
 	}
 
 	// --------------------------------------------
