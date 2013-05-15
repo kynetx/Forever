@@ -123,8 +123,8 @@
 		CloudOS.raiseEvent('cloudos', 'api_send_email', eventAttributes, "", postFunction);
 	};
 
-			// ------------------------------------------------------------------------
-		CloudOS.sendNotification = function(application, subject, body, priority, token, postFunction) {
+  // ------------------------------------------------------------------------
+  CloudOS.sendNotification = function(application, subject, body, priority, token, postFunction) {
 		var eventAttributes = {
 			"application" : application,
 			"subject"     : subject,
@@ -151,8 +151,8 @@
 	};
 
 	// ------------------------------------------------------------------------
-	CloudOS.subscriptionList  = function(callParmaters, getSuccess) {
-		CloudOS.skyCloud("cloudos", "subscriptionList", callParmaters, getSuccess);
+	CloudOS.subscriptionList  = function(callParmeters, getSuccess) {
+		CloudOS.skyCloud("cloudos", "subscriptionList", callParmeters, getSuccess);
 	};
 
 	// ========================================================================
@@ -172,6 +172,9 @@
 
 	// ------------------------------------------------------------------------
 	CloudOS.getOAuthAccessToken  = function(code, callback) {
+    if(typeof(callback) !== 'function'){
+      callback = function(){};
+    }
 		var url = 'https://' + CloudOS.host +	'/oauth/access_token';
 		var data = {
 				"grant_type"   : "authorization_code",
