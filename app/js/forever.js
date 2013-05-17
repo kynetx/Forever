@@ -1,4 +1,3 @@
-/* ex: set tabstop=4 shiftwidth=4 noexpandtab softtabstop=4: */
 $(document).ready(function() {
 
 	// --------------------------------------------
