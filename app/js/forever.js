@@ -30,8 +30,14 @@ $(document).ready(function() {
 		// set type, either numeric or text
 		type: 'text'
 	});
+	
+	// --------------------------------------------
+	// Check authentication
+	// Gotta do this before trying to figure out which page we should show (view_loading).
+	CloudOS.retrieveSession();
 
-	page('/', view_home);
+
+	page('/', view_loading);
 	page('/login*', view_login);
 	page('/signup*', view_signup);
 	page('/about', view_about);
@@ -45,12 +51,7 @@ $(document).ready(function() {
 	page('*', view_notfound);
 	page();
 
-	var currentView = 'home';
-
-	// --------------------------------------------
-	// Check authentication
-	CloudOS.retrieveSession();
-
+	var currentView = 'loading';
 	if (CloudOS.authenticatedSession()) {
 		Navbar_Show_Auth();
 		page('/friends');
@@ -151,6 +152,19 @@ $(document).ready(function() {
 	function set_screen_title(screenName) {
 		$('a.brand').text('Forever ' + screenName);
 	}
+	
+	// --------------------------------------------
+	// View: loading
+	function view_loading() {
+		if (CloudOS.authenticatedSession()) {
+			show_view('loading')
+			currentView = 'loading';
+		} else {
+			show_view('home');
+			currentView = 'home';
+		}
+	};
+
 	// --------------------------------------------
 	// View: home
 	function view_home() {

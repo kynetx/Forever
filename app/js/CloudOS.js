@@ -231,38 +231,33 @@
 
 	// --------------------------------------------
 	function kookie_create(SkySessionToken) {
-    if (SkyTokenExpire) {
-      var date = new Date();
-      date.setTime(date.getTime()+(SkyTokenExpire*24*60*60*1000));
-      var expires = "; expires="+date.toGMTString();
-    }
-    else var expires = "";
-    var kookie = SkyTokenName+"="+SkySessionToken+expires+"; path=/";
-    document.cookie = kookie;
-    // console.debug('(create): ', kookie);
+		if (SkyTokenExpire) {
+			var date = new Date();
+			date.setTime(date.getTime()+(SkyTokenExpire*24*60*60*1000));
+			var expires = "; expires="+date.toGMTString();
+		}
+		else var expires = "";
+		var kookie = SkyTokenName+"="+SkySessionToken+expires+"; path=/";
+		document.cookie = kookie;
 	}
 
 	// --------------------------------------------
 	function kookie_delete() {
-    var kookie = SkyTokenName+"=foo; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/";
-    document.cookie = kookie;
-    // console.debug('(destroy): ', kookie);
+		var kookie = SkyTokenName+"=foo; expires=Thu, 01-Jan-1970 00:00:01 GMT; path=/";
+		document.cookie = kookie;
 	}
 
 	// --------------------------------------------
 	function kookie_retrieve() {
-    var TokenValue = 'undefined';
+		var TokenValue = 'undefined';
 		var TokenName  = '__SkySessionToken';
-    var allKookies = document.cookie.split('; ');
-    for (var i=0;i<allKookies.length;i++) {
-      var kookiePair = allKookies[i].split('=');
-			// console.debug("Kookie Name: ", kookiePair[0]);
-			// console.debug("Token  Name: ", TokenName);
-      if (kookiePair[0] == TokenName) {
-        TokenValue = kookiePair[1];
-      };
-    }
-    // console.debug("(retrieve) TokenValue: ", TokenValue);
+		var allKookies = document.cookie.split('; ');
+		for (var i=0;i<allKookies.length;i++) {
+			var kookiePair = allKookies[i].split('=');
+			if (kookiePair[0] == TokenName) {
+				TokenValue = kookiePair[1];
+			};
+		}
 		return TokenValue;
 	}
 
