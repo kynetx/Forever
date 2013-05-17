@@ -52,10 +52,10 @@ $(document).ready(function() {
 	CloudOS.retrieveSession();
 
 	if (CloudOS.authenticatedSession()) {
-		Navbar_Show_Auth()
-		show_view('home-auth')
+		Navbar_Show_Auth();
+		page('/friends');
 	} else {
-		Navbar_Show_Anon()
+		Navbar_Show_Anon();
 		show_view('home');
 	}
 
