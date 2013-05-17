@@ -624,7 +624,8 @@ $(document).ready(function() {
 				currentView = 'friends';
 
 				$("#view-friends table").tablesorter({
-					sortList: [[0,0]] // Sort by name ascendingly
+					sortList: [[0,0]], // Sort by name ascendingly
+					theme: "bootstrap"
 				});
 
 				$('#modalSpinner').hide();
