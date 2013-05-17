@@ -21,7 +21,6 @@ $(document).ready(function() {
 		},
 		format: function(s, table, cell, cellIndex) {
 			var matches = s.toLowerCase().match(/([a-z,.'-]+)$/i); // Get the last name
-			console.log(matches);
 			if(typeof(matches) === "object" && matches != null && matches.length > 0){
 				return matches[0];
 			} else {
@@ -627,6 +626,8 @@ $(document).ready(function() {
 					sortList: [[0,0]], // Sort by name ascendingly
 					theme: "bootstrap"
 				});
+
+				$("#view-friends table").trigger("update");
 
 				$('#modalSpinner').hide();
 			}
