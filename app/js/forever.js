@@ -1,3 +1,4 @@
+/* ex: set tabstop=4 shiftwidth=4 noexpandtab softtabstop=4: */
 $(document).ready(function() {
 
 	// --------------------------------------------
@@ -73,11 +74,10 @@ $(document).ready(function() {
 		var vars = query.split('&');
 		for (var i = 0; i < vars.length; i++) {
 			var pair = vars[i].split('=');
-				if (decodeURIComponent(pair[0]) == variable) {
-          return decodeURIComponent(pair[1]);
-        }
-    }
-    // console.log('Query variable %s not found', variable);
+			if (decodeURIComponent(pair[0]) == variable) {
+				return decodeURIComponent(pair[1]);
+			}
+		}
 	}
 
 	// --------------------------------------------
@@ -110,9 +110,9 @@ $(document).ready(function() {
 	// Style the profile photo uploader button
 
 	$(":file.image").filestyle({
-    textField: false,
-    buttonText: "Choose image",
-    icon: true
+		textField: false,
+		buttonText: "Choose image",
+		icon: true
 	});
 
 
@@ -151,15 +151,15 @@ $(document).ready(function() {
 		// console.debug("view_login");
 
 		CloudOS.getOAuthAccessToken(oauthCode, function(){
-      if (CloudOS.authenticatedSession()) {
-          Navbar_Show_Auth()
-          show_view('home-auth')
-          $('#modalSpinner').hide();
-      } else {
-          Navbar_Show_Anon()
-          show_view('home');
-      }
-    });
+			if (CloudOS.authenticatedSession()) {
+				Navbar_Show_Auth();
+				show_view('home-auth');
+				$('#modalSpinner').hide();
+			} else {
+				Navbar_Show_Anon();
+				show_view('home');
+			}
+		});
 	};
 
 	// --------------------------------------------
@@ -172,14 +172,14 @@ $(document).ready(function() {
 		// console.debug("token: ", token);
 
 		CloudOS.getOAuthAccessToken(oauthCode, function(){
-      if (CloudOS.authenticatedSession()) {
-          Navbar_Show_Auth();
-          acceptInvitation(token);
-      } else {
-          Navbar_Show_Anon()
-          show_view('home');
-      }
-    });
+			if (CloudOS.authenticatedSession()) {
+				Navbar_Show_Auth();
+				acceptInvitation(token);
+			} else {
+				Navbar_Show_Anon()
+				show_view('home');
+			}
+		});
 	};
 
 	// --------------------------------------------
@@ -232,8 +232,8 @@ $(document).ready(function() {
 			$('#myProfilePhoto').val(json.myProfilePhoto);
 			$('#myProfilePhoto-preview').attr('src', json.myProfilePhoto);
 
-      show_view('profile');
-      currentView = 'profile';
+			show_view('profile');
+			currentView = 'profile';
 			$('#modalSpinner').hide();
 		});
 	};
@@ -304,8 +304,8 @@ $(document).ready(function() {
 			function(json) {
 				$('#modalSpinner').hide();
 				$('#alert-profile-success').show('fast').delay(7000).hide('fast')
-		})
-  })
+			});
+	});
 
 	// ========================================================================
 	// Friend Finder
@@ -321,13 +321,13 @@ $(document).ready(function() {
 			// console.debug("myPhoto: ", myPhoto);
 
 			if (myName === '' || myPhoto === 'https://s3.amazonaws.com/k-mycloud/a169x672/unknown.png') {
-					$("form.form-finder span.help-block").show();
-					$("form.form-finder input").prop('disabled', true);
-					$("form.form-finder button").prop('disabled', true);
+				$("form.form-finder span.help-block").show();
+				$("form.form-finder input").prop('disabled', true);
+				$("form.form-finder button").prop('disabled', true);
 			} else {
-			$("form.form-finder span.help-block").hide();
-			$("form.form-finder input").prop('disabled', false);
-			$("form.form-finder button").prop('disabled', false);
+				$("form.form-finder span.help-block").hide();
+				$("form.form-finder input").prop('disabled', false);
+				$("form.form-finder button").prop('disabled', false);
 			}
 	}
 
@@ -349,10 +349,10 @@ $(document).ready(function() {
 									val.token + '" data-name="'+val.name+'" data-email="'+val.email+'">Resend</button>' +
 									'</td></tr>';
 						$('#table-finder').prepend(newRow);
-					})
+					});
 				}
-        show_view('finder');
-        currentView = 'finder';
+				show_view('finder');
+				currentView = 'finder';
 				$('#modalSpinner').hide();
 			}
 		);
@@ -498,10 +498,10 @@ $(document).ready(function() {
 					}
 
 					show_view('invite');
-          currentView = 'invite';
+					currentView = 'invite';
 				} else {
 					show_view('invite-expired');
-          currentView = 'invite-expired';
+					currentView = 'invite-expired';
 				}
 				$('#modalSpinner').hide();
 			}
@@ -510,71 +510,66 @@ $(document).ready(function() {
 
 	// --------------------------------------------
 	function acceptInvitation(token) {
-		CloudOS.getFriendProfile(token,
-			function(json) {
-					$('#btn-invitation-accept').attr('data-token', token);
-					$('#btn-invitation-accept').attr('data-name', json.myProfileName);
-					$('#btn-invitation-accept').attr('data-photo', json.myProfilePhoto);
+		CloudOS.getFriendProfile(token, function(json) {
+			$('#btn-invitation-accept').attr('data-token', token);
+			$('#btn-invitation-accept').attr('data-name', json.myProfileName);
+			$('#btn-invitation-accept').attr('data-photo', json.myProfilePhoto);
 
-        CloudOS.createChannel(
-          function(json) {
-                var ourName  = $('#btn-invitation-accept').attr('data-name');
-                var ourToken = $('#btn-invitation-accept').attr('data-token');
-                var ourPhoto = $('#btn-invitation-accept').attr('data-photo');
-                var myName   = $('#myProfileName').val();
-                var myPhoto  = $('#myProfilePhoto').val();
-                var myToken  = json.token;
-                var attrs  = {
-                    "names"  : myName+":"+ourName,
-                    "tokens" : myToken+":"+ourToken,
-                    "photos" : myPhoto+";"+ourPhoto,
-                    "pdsKey" : ourToken
-                };
-                CloudOS.subscribe("Forever", "Forever Friend", "friend-friend",
-                  ourToken, JSON.stringify(attrs),
-                  function(json) {
-                    setTimeout('page(\'/friends\')', 2000);
-                  }
-               );
-            }
-        );
+			CloudOS.createChannel(function(json) {
+				var ourName  = $('#btn-invitation-accept').attr('data-name');
+				var ourToken = $('#btn-invitation-accept').attr('data-token');
+				var ourPhoto = $('#btn-invitation-accept').attr('data-photo');
+				var myName   = $('#myProfileName').val();
+				var myPhoto  = $('#myProfilePhoto').val();
+				var myToken  = json.token;
+				var attrs  = {
+					"names"  : myName+":"+ourName,
+					"tokens" : myToken+":"+ourToken,
+					"photos" : myPhoto+";"+ourPhoto,
+					"pdsKey" : ourToken
+				};
+				CloudOS.subscribe("Forever", "Forever Friend", "friend-friend",
+					ourToken, JSON.stringify(attrs),
+					function(json) {
+						setTimeout(function(){page('/friends')}, 2000);
+					}
+				);
 			});
+		});
 
-			return false;
+		return false;
 	}
 
 	// --------------------------------------------
 	// Accept Forever Invitation
-	$('#btn-invitation-accept').on('click',
-		function(event){
-			$('#modalSpinner').show();
-			CloudOS.createChannel(
+	$('#btn-invitation-accept').on('click', function(event){
+		$('#modalSpinner').show();
+		CloudOS.createChannel(function(json) {
+			var ourName  = $('#btn-invitation-accept').attr('data-name');
+			var ourToken = $('#btn-invitation-accept').attr('data-token');
+			var ourPhoto = $('#btn-invitation-accept').attr('data-photo');
+			var myName   = $('#myProfileName').val();
+			var myPhoto  = $('#myProfilePhoto').val();
+			var myToken  = json.token;
+
+			var attrs  = {
+				"names"  : myName+":"+ourName,
+				"tokens" : myToken+":"+ourToken,
+				"photos" : myPhoto+";"+ourPhoto,
+				"pdsKey" : ourToken
+			};
+
+			CloudOS.subscribe("Forever", "Forever Friend", "friend-friend",
+				ourToken, JSON.stringify(attrs),
 				function(json) {
-					var ourName  = $('#btn-invitation-accept').attr('data-name');
-					var ourToken = $('#btn-invitation-accept').attr('data-token');
-					var ourPhoto = $('#btn-invitation-accept').attr('data-photo');
-					var myName   = $('#myProfileName').val();
-					var myPhoto  = $('#myProfilePhoto').val();
-					var myToken  = json.token;
-					var attrs  = {
-							"names"  : myName+":"+ourName,
-							"tokens" : myToken+":"+ourToken,
-							"photos" : myPhoto+";"+ourPhoto,
-							"pdsKey" : ourToken
-					};
-					CloudOS.subscribe("Forever", "Forever Friend", "friend-friend",
-														ourToken, JSON.stringify(attrs),
-						function(json) {
-							setTimeout(function(){
-                page('/friends');
-              }, 3000);
-						}
-					);
-				}
-			);
-			return false;
-		}
-	)
+					setTimeout(function(){
+						page('/friends');
+					}, 3000);
+				});
+		});
+
+		return false;
+	});
 
 	// ========================================================================
 	// Friends Management
@@ -604,9 +599,9 @@ $(document).ready(function() {
 							$('#table-friends').prepend(newRow);
 					}
 				});
-        show_view('friends');
-        $('#modalSpinner').hide();
-        currentView = 'friends';
+				show_view('friends');
+				$('#modalSpinner').hide();
+				currentView = 'friends';
 			}
 		);
 	}
@@ -692,9 +687,9 @@ $(document).ready(function() {
 						$('#btn-friend-message').hide();
 				}
 
-        show_view('friend');
-        $('#modalSpinner').hide();
-        currentView = 'friend';
+				show_view('friend');
+				$('#modalSpinner').hide();
+				currentView = 'friend';
 			}
 		);
 	}
@@ -715,8 +710,8 @@ $(document).ready(function() {
 					$('#messageToken').val(token);
 					$('#messageName').val(json.myProfileName);
 
-          show_view('message');
-          currentView = 'message';
+					show_view('message');
+					currentView = 'message';
 					$('#modalSpinner').hide();
 				}
 			}
