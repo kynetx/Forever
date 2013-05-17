@@ -158,6 +158,11 @@ privacy policy of the personal cloud provider is what is relevant.</p>
       <div id="view-friends" class="view row-fluid" style="display:none;">
         <div class="span12" style="margin-bottom:12px;">
 					<table class="table table-bordered table-hover">
+						<thead>
+							<tr>
+								<th class="sorter-lastname">Name</th>
+							</tr>
+						</thead>
 						<tbody id="table-friends">
 						</tbody>
 					</table>
@@ -410,8 +415,12 @@ privacy policy of the personal cloud provider is what is relevant.</p>
 		<script src="https://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.0/js/bootstrap.min.js"></script>
 		<script src="js/page.js"></script>
 		<script src="js/bootstrap-filestyle.js"></script>
+		<script type="text/javascript" src="/libs/tablesorter/js/jquery.tablesorter.js"></script>
 		<script src="js/CloudOS.js"></script>
 		<script src="js/forever.js"></script>
 
+    <!-- choose a theme file -->
+    <link rel="stylesheet" href="/libs/tablesorter/css/theme.default.css">
+    <!-- load jQuery and tablesorter scripts -->
   </body>
 </html>

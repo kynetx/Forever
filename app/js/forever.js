@@ -8,7 +8,28 @@ $(document).ready(function() {
 	// --------------------------------------------
 	// Click handler for Add Link on Homepage
 	$('#navAddLink').click(function() {
-			$('#modalAddLink').modal();
+		$('#modalAddLink').modal();
+	});
+
+	// add parser through the tablesorter addParser method
+	$.tablesorter.addParser({
+		// set a unique id
+		id: 'lastname',
+		is: function(s, table, cell) {
+			// return false so this parser is not auto detected
+			return true;
+		},
+		format: function(s, table, cell, cellIndex) {
+			var matches = s.toLowerCase().match(/([a-z,.'-]+)$/i); // Get the last name
+			console.log(matches);
+			if(typeof(matches) === "object" && matches != null && matches.length > 0){
+				return matches[0];
+			} else {
+				return "zzzzzzzzzzz"; // Make the no-names last.
+			}
+		},
+		// set type, either numeric or text
+		type: 'text'
 	});
 
 	page('/', view_home);
@@ -593,14 +614,20 @@ $(document).ready(function() {
 							}
 							var newRow = '<tr data-token="' + dtoken + '"><td>' +
 									fname +
-								  '<i class="icon-chevron-right pull-right"></i>' +
+									'<i class="icon-chevron-right pull-right"></i>' +
 									'</td></tr>';
 							$('#table-friends').prepend(newRow);
 					}
 				});
+
 				show_view('friends');
-				$('#modalSpinner').hide();
 				currentView = 'friends';
+
+				$("#view-friends table").tablesorter({
+					sortList: [[0,0]] // Sort by name ascendingly
+				});
+
+				$('#modalSpinner').hide();
 			}
 		);
 	}
