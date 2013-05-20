@@ -51,39 +51,42 @@ $(document).ready(function() {
 	page('*', view_notfound);
 	page();
 
+	// --------------------------------------------
+	// Check query parameters
+	var query = window.location.search.substring(1);
+
 	var currentView = 'loading';
 	if (CloudOS.authenticatedSession()) {
 		Navbar_Show_Auth();
-		page('/friends');
+		if(query === ""){
+			page('/friends');
+		}
 	} else {
 		Navbar_Show_Anon();
 		show_view('home');
 	}
 
-	// --------------------------------------------
-	// Check query parameters
-	var query = window.location.search.substring(1);
 	// console.debug("QUERY: ", query);
 	if (query != "") {
 		if (query === "friends")
-			page("/friends")
+			page("/friends");
 		else if (query.match(/login\&.+$/))
-			page("/"+query)
+			page("/"+query);
 		else if (query.match(/signup\&.+$/))
-			page("/"+query)
+			page("/"+query);
 		else if (query === "about")
-			page("/about")
+			page("/about");
 		else if (query === "finder")
-			page("/finder")
+			page("/finder");
 		else if (query === "profile")
-			page("/profile")
+			page("/profile");
 		else if (query.match(/friend\/.+$/))
-			page("/"+query)
+			page("/"+query);
 		else if (query.match(/message\/.+$/))
-			page("/"+query)
+			page("/"+query);
 		else if (query.match(/invite\=.+$/)) {
-		  var inviteToken = getQueryVariable('invite')
-			page("/invite/"+inviteToken)
+			var inviteToken = getQueryVariable('invite');
+			page("/invite/"+inviteToken);
 		} else {
 			// console.debug('Unrecognized query string: ', query);
 		}
