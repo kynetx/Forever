@@ -167,6 +167,17 @@ public class TestForever {
 		assertEquals("swf@kynetx.com", driver.findElement(By.id("friend-email")).getText());
 		assertEquals("8016023200", driver.findElement(By.id("friend-phone")).getText());
 	}
+	
+	@Test
+	public void testInvitation() throws Exception {
+		driver.get(baseUrl + "?invite=52dfa6268621d5b13f3cc8560ae00be0");
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("hostess-name")));
+		
+		assertEquals("Jessie A. Morris", driver.findElement(By.id("hostess-name")).getText());
+		assertEquals("jessie@jessieamorris.com", driver.findElement(By.id("hostess-email")).getText());
+		assertEquals("801-210-1526", driver.findElement(By.id("hostess-phone")).getText());
+	}
 
 	@AfterClass
 	public static void testFixtureTearDown() throws Exception {
