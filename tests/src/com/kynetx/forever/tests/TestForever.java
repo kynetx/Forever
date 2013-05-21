@@ -1,12 +1,15 @@
 package com.kynetx.forever.tests;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
+import org.junit.FixMethodOrder;
 import org.junit.Test;
+import org.junit.runners.MethodSorters;
 import org.openqa.selenium.By;
 import org.openqa.selenium.NoSuchElementException;
 import org.openqa.selenium.WebDriver;
@@ -15,6 +18,7 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
+@FixMethodOrder(MethodSorters.NAME_ASCENDING)
 public class TestForever {
 
 	private static WebDriver driver;
@@ -24,6 +28,8 @@ public class TestForever {
 	private static int timeout = 60; // Timeout in seconds
 	private static StringBuffer verificationErrors = new StringBuffer();
 
+	private static int friends;
+	
 	@BeforeClass
 	public static void setUp() throws Exception {
 		System.setProperty("webdriver.chrome.driver", "/home/jessie/libs/bin/chromedriver");
@@ -33,7 +39,7 @@ public class TestForever {
 	}
 
 	@Test
-	public void testOAuth() throws Exception {
+	public void test00OAuth() throws Exception {
 		
 		String userEmail = "cloudos_test0@kynetx.com";
 		String userPassword = "fizzbazz";
@@ -96,7 +102,7 @@ public class TestForever {
 	}
 	
 	@Test
-	public void testProfile() throws Exception {
+	public void test10Profile() throws Exception {
 		// Open up the menu...
 		driver.findElement(By.cssSelector("div.navbar-inner .container-fluid button.btn")).click();
 		driver.findElement(By.linkText("Profile")).click();
@@ -116,6 +122,8 @@ public class TestForever {
 		
 		// Go to SquareTag
 		driver.get(squareTagUrl);
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("navAvatar")));
 		
 		// Open up the profile page on SquareTag
 		driver.findElement(By.id("navAvatar")).click();
@@ -138,6 +146,8 @@ public class TestForever {
 		// Check if our changes in SquareTag show up in Forever
 		driver.get(baseUrl);
 		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("view-friends")));
+		
 		// Open up the menu...
 		driver.findElement(By.cssSelector("div.navbar-inner .container-fluid button.btn")).click();
 		driver.findElement(By.linkText("Profile")).click();
@@ -149,12 +159,12 @@ public class TestForever {
 	}
 	
 	@Test
-	public void testExistingFriends() throws Exception {
-		// Open up the menu...
-		driver.findElement(By.cssSelector("div.navbar-inner .container-fluid button.btn")).click();
-		driver.findElement(By.linkText("Friends")).click();
-		
+	public void test20ExistingFriends() throws Exception {
+		driver.get(baseUrl);
+				
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#table-friends")));
+		
+		friends = driver.findElements(By.cssSelector("#table-friends>tr")).size();
 		
 		WebElement firstFriend = driver.findElement(By.cssSelector("#table-friends>tr:nth-of-type(1)>td"));
 		assertEquals("Steve Fulling", firstFriend.getText());
@@ -163,13 +173,14 @@ public class TestForever {
 		
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("friend-name")));
 		
-		assertEquals("Steve Fulling", driver.findElement(By.id("friend-name")).getText());
-		assertEquals("swf@kynetx.com", driver.findElement(By.id("friend-email")).getText());
-		assertEquals("8016023200", driver.findElement(By.id("friend-phone")).getText());
+		assertEquals("Steve Fulling", driver.findElement(By.cssSelector("#view-friend #friend-name")).getText());
+		assertEquals("swf@kynetx.com", driver.findElement(By.cssSelector("#view-friend #friend-email")).getText());
+		assertEquals("8016023200", driver.findElement(By.cssSelector("#view-friend #friend-phone")).getText());
 	}
+
 	
 	@Test
-	public void testInvitation() throws Exception {
+	public void test30Invitation() throws Exception {
 		driver.get(baseUrl + "?invite=52dfa6268621d5b13f3cc8560ae00be0");
 		
 		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("hostess-name")));
@@ -177,7 +188,77 @@ public class TestForever {
 		assertEquals("Jessie A. Morris", driver.findElement(By.id("hostess-name")).getText());
 		assertEquals("jessie@jessieamorris.com", driver.findElement(By.id("hostess-email")).getText());
 		assertEquals("801-210-1526", driver.findElement(By.id("hostess-phone")).getText());
+		
+		driver.findElement(By.id("btn-invitation-accept")).click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#table-friends")));
+		
+		int friendsAfterAcceptance = driver.findElements(By.cssSelector("#table-friends>tr")).size();
+		assertEquals(friends + 1, friendsAfterAcceptance);
 	}
+
+	
+	@Test
+	public void test40NewAccount() throws Exception {
+		driver.get(squareTagUrl);
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("navAvatar")));
+		
+		driver.findElement(By.id("navAvatar")).click();
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#navRight ul.dropdown-menu")));
+		
+		driver.findElement(By.linkText("Logout")).click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("formLogin")));
+		
+		driver.get(baseUrl);
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("view-friends")));
+		
+		// Open up the menu and logout
+		driver.findElement(By.cssSelector("div.navbar-inner .container-fluid button.btn")).click();
+		driver.findElement(By.linkText("Logout")).click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("Click here to Link Squaretag")));
+
+		// Let's get linking!!
+		driver.findElement(By.linkText("Click here to Link Squaretag")).click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.linkText("I'm a new SquareTag User")));
+		
+		// Start the create a new account process
+		driver.findElement(By.linkText("I'm a new SquareTag User")).click();
+	
+		long time = System.currentTimeMillis();
+		String email = "cloudos_test"+time+"@kynetx.com";
+		String password = "fizzbazz";
+		
+		driver.findElement(By.id("signupEmail")).sendKeys(email);
+		driver.findElement(By.id("signupPassword")).sendKeys(password);
+		driver.findElement(By.id("confirmPassword")).sendKeys(password);
+		
+		driver.findElement(By.id("signupSubmit")).click();
+		
+		By authorizeLink = By.cssSelector("#cloudAppPanel-b177052x7-content a.btn-primary");
+		wait.until(ExpectedConditions.visibilityOfElementLocated(authorizeLink));
+		driver.findElement(authorizeLink).click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.id("view-home-auth")));
+		assertEquals("Forever is linked to your personal cloud", driver.findElement(By.cssSelector("#view-home-auth h3")).getText());
+	}
+	
+	@Test
+	public void test50NewAccountFriends() throws Exception {
+		// Open up the menu...
+		driver.findElement(By.cssSelector("div.navbar-inner .container-fluid button.btn")).click();
+		// Go to friends list
+		driver.findElement(By.linkText("Friends")).click();
+		
+		wait.until(ExpectedConditions.visibilityOfElementLocated(By.cssSelector("#view-friends")));
+		
+		assertFalse(isElementPresent(By.cssSelector("#table-friends>tr")));
+	}
+	
 
 	@AfterClass
 	public static void testFixtureTearDown() throws Exception {
