@@ -35,6 +35,7 @@ $(document).ready(function() {
 	// Check authentication
 	// Gotta do this before trying to figure out which page we should show (view_loading).
 	CloudOS.retrieveSession();
+	var friends_list_shown = false;
 
 
 	page('/', view_loading);
@@ -160,8 +161,14 @@ $(document).ready(function() {
 	// View: loading
 	function view_loading() {
 		if (CloudOS.authenticatedSession()) {
-			show_view('loading')
-			currentView = 'loading';
+			if(!friends_list_shown){ // If we've not shown this page before (first load)
+				show_view('loading')
+				currentView = 'loading';
+				friends_list_shown = true;
+			} else {
+				show_view('friends');
+				currentView = 'friends';
+			}
 		} else {
 			show_view('home');
 			currentView = 'home';
@@ -172,7 +179,7 @@ $(document).ready(function() {
 	// View: home
 	function view_home() {
 		if (CloudOS.authenticatedSession()) {
-			show_view('home-auth')
+			show_view('home-auth');
 		} else {
 			show_view('home');
 		}
