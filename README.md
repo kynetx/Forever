@@ -1,5 +1,4 @@
-
-Forever is an evergreen address book. The idea is that rather than everyone storing contact information for their friends and then having it go stale, Forever pulls the contact information in real time when you want to message, email, or call one of your friends.  Here's a picture:
+Forever is an evergreen address book. You can see [Forever in action](https://forevr.us). The idea is that rather than everyone storing contact information for their friends and then having it go stale, Forever pulls the contact information in real time when you want to message, email, or call one of your friends.  Here's a picture:
 
 ![Forever diagram](imgs/forever-subscriptions.png)
 
